@@ -1,14 +1,21 @@
-async function redis(command, ...args) {
-  const url   = process.env.UPSTASH_REDIS_REST_URL;
-  const token = process.env.UPSTASH_REDIS_REST_TOKEN;
-  if (!url || !token) throw new Error('UPSTASH env vars not set');
+function getRestConfig() {
+  const url = process.env.REDIS_URL;
+  if (!url) return null;
+  try {
+    const u = new URL(url);
+    return { baseUrl: `https://${u.hostname}`, token: decodeURIComponent(u.password) };
+  } catch { return null; }
+}
 
-  const res = await fetch(url, {
+async function redis(command, ...args) {
+  const cfg = getRestConfig();
+  if (!cfg) throw new Error('REDIS_URL not set');
+  const res = await fetch(cfg.baseUrl, {
     method: 'POST',
-    headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+    headers: { 'Authorization': `Bearer ${cfg.token}`, 'Content-Type': 'application/json' },
     body: JSON.stringify([command, ...args]),
   });
-  if (!res.ok) throw new Error(`Upstash HTTP ${res.status}: ${await res.text()}`);
+  if (!res.ok) throw new Error(`Upstash ${res.status}: ${await res.text()}`);
   const { result } = await res.json();
   return result;
 }
