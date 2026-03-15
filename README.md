@@ -1,4 +1,4 @@
-﻿# Delegacy
+# Delegacy
 
 > **Session Key Wallet Infrastructure — as a Service**
 >

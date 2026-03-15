@@ -1,4 +1,4 @@
-﻿{
+{
   "name": "@delegacy/sdk",
   "version": "0.1.0",
   "description": "TypeScript SDK for integrating Delegacy session key wallets",

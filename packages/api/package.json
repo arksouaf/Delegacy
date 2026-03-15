@@ -1,4 +1,4 @@
-﻿{
+{
   "name": "@delegacy/api",
   "version": "0.1.0",
   "description": "Delegacy backend API — session management, bundler relay, paymaster",

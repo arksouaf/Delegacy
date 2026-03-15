@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -435,6 +435,31 @@
     .tab-panel.active { display: block; }
 
     /* ═══════════════════════════════════════════════════════
+       COMPARISON TABLE
+    ═══════════════════════════════════════════════════════ */
+    .cmp-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: 16px; border: 1px solid var(--border); }
+    .cmp-table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+    .cmp-table thead tr { background: rgba(56,189,248,.07); }
+    .cmp-table th {
+      padding: .9rem 1.1rem; text-align: center; font-weight: 600;
+      font-size: .8rem; letter-spacing: .06em; text-transform: uppercase;
+      color: var(--muted); white-space: nowrap; border-bottom: 1px solid var(--border);
+    }
+    .cmp-table th.cmp-feature-col { text-align: left; }
+    .cmp-table th.cmp-us { color: var(--blue); background: rgba(56,189,248,.1); }
+    .cmp-table td { padding: .8rem 1.1rem; text-align: center; border-bottom: 1px solid rgba(255,255,255,.04); }
+    .cmp-table td.cmp-feature { text-align: left; color: var(--text); font-weight: 500; white-space: nowrap; }
+    .cmp-table td.cmp-us { background: rgba(56,189,248,.05); }
+    .cmp-table tbody tr:last-child td { border-bottom: none; }
+    .cmp-table tbody tr:hover td { background: rgba(255,255,255,.025); }
+    .cmp-table tbody tr:hover td.cmp-us { background: rgba(56,189,248,.09); }
+    .cmp-yes  { color: var(--green); font-weight: 700; font-size: 1rem; }
+    .cmp-no   { color: rgba(255,255,255,.2); font-size: .95rem; }
+    .cmp-part { font-size: .72rem; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: var(--purple); background: rgba(167,139,250,.12); padding: .15rem .45rem; border-radius: 4px; white-space: nowrap; }
+    .cmp-footnote { margin-top: 1.25rem; text-align: center; font-size: .78rem; color: var(--muted); }
+    .cmp-part-inline { color: var(--purple); }
+
+    /* ═══════════════════════════════════════════════════════
        SECURITY
     ═══════════════════════════════════════════════════════ */
     .sec-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; }
@@ -599,6 +624,7 @@
       .uc-grid          { grid-template-columns: 1fr 1fr; }
       .demo-layout      { grid-template-columns: 1fr; }
       .sec-layout       { grid-template-columns: 1fr; }
+      .cmp-table th, .cmp-table td { padding: .7rem .75rem; font-size: .8rem; }
       .pricing-grid     { grid-template-columns: 1fr 1fr; }
       .footer-top       { grid-template-columns: 1fr 1fr; }
       .stats-inner      { grid-template-columns: 1fr 1fr; }
@@ -629,6 +655,7 @@
       <li><a href="#how-it-works">How It Works</a></li>
       <li><a href="#policies">Policies</a></li>
       <li><a href="#use-cases">Use Cases</a></li>
+      <li><a href="#comparison">Compare</a></li>
       <li><a href="#pricing">Pricing</a></li>
       <li><a href="docs/solana-architecture.html">Docs ↗</a></li>
     </ul>
@@ -1188,6 +1215,142 @@ console.<span class="fn">log</span>(<span class="str">'Sig:'</span>, result.sign
 </section>
 
 <!-- ═══════════════════════════════════════════════════════════
+     COMPETITOR COMPARISON
+═══════════════════════════════════════════════════════════ -->
+<section class="section" id="comparison" style="padding-top:0">
+  <div class="container">
+    <div class="section-hdr">
+      <div class="section-tag">Why Delegacy</div>
+      <h2 class="section-title">How we <span class="grad">stack up</span> against the field</h2>
+      <p class="section-sub">Delegacy is the only session key infrastructure that spans both EVM and Solana under a single unified SDK — while staying non-custodial end-to-end.</p>
+    </div>
+
+    <div class="cmp-wrap">
+      <table class="cmp-table">
+        <thead>
+          <tr>
+            <th class="cmp-feature-col">Feature</th>
+            <th class="cmp-us">Delegacy</th>
+            <th>ZeroDev</th>
+            <th>Biconomy</th>
+            <th>Safe</th>
+            <th>Permissionless</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="cmp-feature">EVM session keys</td>
+            <td class="cmp-us"><span class="cmp-yes">✓</span></td>
+            <td><span class="cmp-yes">✓</span></td>
+            <td><span class="cmp-yes">✓</span></td>
+            <td><span class="cmp-yes">✓</span></td>
+            <td><span class="cmp-part">partial</span></td>
+          </tr>
+          <tr>
+            <td class="cmp-feature">Solana session keys</td>
+            <td class="cmp-us"><span class="cmp-yes">✓</span></td>
+            <td><span class="cmp-no">✗</span></td>
+            <td><span class="cmp-no">✗</span></td>
+            <td><span class="cmp-no">✗</span></td>
+            <td><span class="cmp-no">✗</span></td>
+          </tr>
+          <tr>
+            <td class="cmp-feature">Unified cross-chain SDK</td>
+            <td class="cmp-us"><span class="cmp-yes">✓</span></td>
+            <td><span class="cmp-no">✗</span></td>
+            <td><span class="cmp-no">✗</span></td>
+            <td><span class="cmp-no">✗</span></td>
+            <td><span class="cmp-no">✗</span></td>
+          </tr>
+          <tr>
+            <td class="cmp-feature">On-chain policy enforcement</td>
+            <td class="cmp-us"><span class="cmp-yes">✓</span></td>
+            <td><span class="cmp-yes">✓</span></td>
+            <td><span class="cmp-part">partial</span></td>
+            <td><span class="cmp-yes">✓</span></td>
+            <td><span class="cmp-no">✗</span></td>
+          </tr>
+          <tr>
+            <td class="cmp-feature">Spending limit policy</td>
+            <td class="cmp-us"><span class="cmp-yes">✓</span></td>
+            <td><span class="cmp-yes">✓</span></td>
+            <td><span class="cmp-yes">✓</span></td>
+            <td><span class="cmp-part">plugin</span></td>
+            <td><span class="cmp-no">✗</span></td>
+          </tr>
+          <tr>
+            <td class="cmp-feature">Rate limit policy</td>
+            <td class="cmp-us"><span class="cmp-yes">✓</span></td>
+            <td><span class="cmp-part">partial</span></td>
+            <td><span class="cmp-no">✗</span></td>
+            <td><span class="cmp-no">✗</span></td>
+            <td><span class="cmp-no">✗</span></td>
+          </tr>
+          <tr>
+            <td class="cmp-feature">Gas limit policy</td>
+            <td class="cmp-us"><span class="cmp-yes">✓</span></td>
+            <td><span class="cmp-no">✗</span></td>
+            <td><span class="cmp-no">✗</span></td>
+            <td><span class="cmp-no">✗</span></td>
+            <td><span class="cmp-no">✗</span></td>
+          </tr>
+          <tr>
+            <td class="cmp-feature">Allowlist policy</td>
+            <td class="cmp-us"><span class="cmp-yes">✓</span></td>
+            <td><span class="cmp-yes">✓</span></td>
+            <td><span class="cmp-yes">✓</span></td>
+            <td><span class="cmp-part">plugin</span></td>
+            <td><span class="cmp-no">✗</span></td>
+          </tr>
+          <tr>
+            <td class="cmp-feature">Custom policy API</td>
+            <td class="cmp-us"><span class="cmp-yes">✓</span></td>
+            <td><span class="cmp-yes">✓</span></td>
+            <td><span class="cmp-no">✗</span></td>
+            <td><span class="cmp-part">partial</span></td>
+            <td><span class="cmp-no">✗</span></td>
+          </tr>
+          <tr>
+            <td class="cmp-feature">Fully non-custodial</td>
+            <td class="cmp-us"><span class="cmp-yes">✓</span></td>
+            <td><span class="cmp-yes">✓</span></td>
+            <td><span class="cmp-part">optional</span></td>
+            <td><span class="cmp-yes">✓</span></td>
+            <td><span class="cmp-yes">✓</span></td>
+          </tr>
+          <tr>
+            <td class="cmp-feature">ERC-4337 compliant</td>
+            <td class="cmp-us"><span class="cmp-yes">✓</span></td>
+            <td><span class="cmp-yes">✓</span></td>
+            <td><span class="cmp-yes">✓</span></td>
+            <td><span class="cmp-yes">✓</span></td>
+            <td><span class="cmp-yes">✓</span></td>
+          </tr>
+          <tr>
+            <td class="cmp-feature">REST API (no SDK needed)</td>
+            <td class="cmp-us"><span class="cmp-yes">✓</span></td>
+            <td><span class="cmp-no">✗</span></td>
+            <td><span class="cmp-yes">✓</span></td>
+            <td><span class="cmp-no">✗</span></td>
+            <td><span class="cmp-no">✗</span></td>
+          </tr>
+          <tr>
+            <td class="cmp-feature">Free tier available</td>
+            <td class="cmp-us"><span class="cmp-yes">✓</span></td>
+            <td><span class="cmp-yes">✓</span></td>
+            <td><span class="cmp-yes">✓</span></td>
+            <td><span class="cmp-yes">✓</span></td>
+            <td><span class="cmp-yes">✓</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p class="cmp-footnote">✓ supported — <span class="cmp-part-inline">partial / plugin required</span> — ✗ not supported. Data based on public documentation as of Q1 2026.</p>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════
      SECURITY MODEL
 ═══════════════════════════════════════════════════════════ -->
 <section class="section" style="padding-top:0">
@@ -1514,13 +1677,42 @@ console.<span class="fn">log</span>(<span class="str">'Sig:'</span>, result.sign
   /* ── CTA form ───────────────────────────────────────────── */
   function handleSignup(e) {
     e.preventDefault();
-    var email = document.getElementById('email-input').value;
-    var msg   = document.getElementById('cta-msg');
-    if (email) {
-      msg.textContent = '🎉 You\'re on the list! We\'ll be in touch soon.';
-      msg.style.color = '#34d399';
-      document.getElementById('email-input').value = '';
-    }
+    var emailInput = document.getElementById('email-input');
+    var btn        = e.target.querySelector('button[type="submit"]');
+    var msg        = document.getElementById('cta-msg');
+    var email      = emailInput.value.trim();
+    if (!email) return;
+
+    // Loading state
+    btn.disabled = true;
+    btn.textContent = 'Joining…';
+    msg.textContent = '';
+    msg.style.color = '';
+
+    fetch('/api/waitlist', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: email })
+    })
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+      if (data.ok) {
+        msg.textContent = '🎉 You\'re on the list! We\'ll be in touch soon.';
+        msg.style.color = '#34d399';
+        emailInput.value = '';
+      } else {
+        msg.textContent = data.error || 'Something went wrong. Please try again.';
+        msg.style.color = '#f87171';
+      }
+    })
+    .catch(function() {
+      msg.textContent = 'Network error — please try again.';
+      msg.style.color = '#f87171';
+    })
+    .finally(function() {
+      btn.disabled = false;
+      btn.textContent = 'Get Early Access →';
+    });
   }
 
   /* ── Entrance animations (subtle fade-up) ───────────────── */
