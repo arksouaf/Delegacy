@@ -1,21 +1,16 @@
-function parseRedisUrl(url) {
-  if (!url) return null;
-  try {
-    const u = new URL(url);
-    return { baseUrl: `https://${u.hostname}`, token: decodeURIComponent(u.password) };
-  } catch {
-    return null;
-  }
-}
+async function redis(command, ...args) {
+  const url   = process.env.UPSTASH_REDIS_REST_URL;
+  const token = process.env.UPSTASH_REDIS_REST_TOKEN;
+  if (!url || !token) throw new Error('UPSTASH env vars not set');
 
-async function redisCmd(baseUrl, token, ...parts) {
-  const path = parts.map(p => encodeURIComponent(String(p))).join('/');
-  const res = await fetch(`${baseUrl}/${path}`, {
+  const res = await fetch(url, {
     method: 'POST',
-    headers: { Authorization: `Bearer ${token}` },
+    headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify([command, ...args]),
   });
-  if (!res.ok) throw new Error(`Redis error: ${res.status}`);
-  return res.json();
+  if (!res.ok) throw new Error(`Upstash HTTP ${res.status}: ${await res.text()}`);
+  const { result } = await res.json();
+  return result;
 }
 
 export default async function handler(req, res) {
@@ -27,20 +22,15 @@ export default async function handler(req, res) {
     return res.status(401).json({ error: 'Unauthorized' });
   }
 
-  const cfg = parseRedisUrl(process.env.REDIS_URL);
-  if (!cfg) return res.status(500).json({ error: 'Redis not configured' });
-
   try {
-    const { result: emails } = await redisCmd(cfg.baseUrl, cfg.token, 'smembers', 'waitlist');
-    const { result: metaFlat } = await redisCmd(cfg.baseUrl, cfg.token, 'hgetall', 'waitlist_meta');
+    const emails  = await redis('SMEMBERS', 'waitlist') ?? [];
+    const metaFlat = await redis('HGETALL', 'waitlist_meta') ?? [];
 
-    // hgetall returns [field, value, field, value, ...]
+    // HGETALL returns [field, value, field, value, ...]
     const meta = {};
-    if (Array.isArray(metaFlat)) {
-      for (let i = 0; i < metaFlat.length; i += 2) meta[metaFlat[i]] = metaFlat[i + 1];
-    }
+    for (let i = 0; i < metaFlat.length; i += 2) meta[metaFlat[i]] = metaFlat[i + 1];
 
-    const waitlist = (emails ?? []).map((email) => ({
+    const waitlist = emails.map((email) => ({
       email,
       signedUpAt: meta[email] ? new Date(Number(meta[email])).toISOString() : null,
     })).sort((a, b) => (a.signedUpAt > b.signedUpAt ? -1 : 1));
@@ -48,7 +38,7 @@ export default async function handler(req, res) {
     return res.status(200).json({ total: waitlist.length, waitlist });
 
   } catch (err) {
-    console.error('[admin/list] error:', err);
-    return res.status(500).json({ error: 'Failed to fetch waitlist.' });
+    console.error('[admin/list] error:', err.message);
+    return res.status(500).json({ error: err.message });
   }
 }
