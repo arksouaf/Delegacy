@@ -1,0 +1,304 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Solana Use Cases — Delegacy</title>
+  <style>
+    :root {
+      --bg: #0d1117;
+      --surface: #161b22;
+      --border: #30363d;
+      --text: #e6edf3;
+      --text-muted: #8b949e;
+      --accent: #58a6ff;
+      --accent-subtle: #1f6feb22;
+      --green: #3fb950;
+      --purple: #bc8cff;
+      --orange: #f0883e;
+      --code-bg: #1c2129;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      padding: 0;
+    }
+    nav {
+      position: sticky; top: 0; background: var(--surface);
+      border-bottom: 1px solid var(--border); padding: 1rem 2rem;
+      display: flex; align-items: center; gap: 1.5rem; z-index: 100; flex-wrap: wrap;
+    }
+    nav .logo { font-weight: 700; font-size: 1.2rem; color: var(--accent); text-decoration: none; }
+    nav .sep { color: var(--border); font-size: 1.2rem; user-select: none; }
+    nav .chain-label {
+      font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em;
+      padding: 0.15rem 0.5rem; border-radius: 4px; font-weight: 700;
+    }
+    nav .chain-label.evm { background: #3fb95022; color: var(--green); }
+    nav .chain-label.sol { background: #bc8cff22; color: var(--purple); }
+    nav a { color: var(--text-muted); text-decoration: none; font-size: 0.9rem; transition: color 0.2s; }
+    nav a:hover, nav a.active { color: var(--text); }
+    .container { max-width: 900px; margin: 0 auto; padding: 3rem 2rem 6rem; }
+    h1 {
+      font-size: 2.4rem; margin-bottom: 0.5rem;
+      background: linear-gradient(135deg, var(--purple), var(--accent));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .subtitle { color: var(--text-muted); font-size: 1.05rem; margin-bottom: 2.5rem; }
+    h2 { font-size: 1.5rem; margin: 2.5rem 0 1rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; }
+    p { margin: 0.75rem 0; }
+    .badge {
+      display: inline-block; background: #bc8cff22; color: var(--purple);
+      padding: 0.15rem 0.6rem; border-radius: 12px; font-size: 0.8rem; font-weight: 600;
+      margin-bottom: 1.5rem;
+    }
+    /* Cards */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 2rem;
+      margin: 1.5rem 0;
+    }
+    .card-header {
+      display: flex; align-items: center; gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+    .card-icon { font-size: 1.6rem; }
+    .card-title { font-size: 1.25rem; font-weight: 700; }
+    .card-priority {
+      margin-left: auto; font-size: 0.7rem; text-transform: uppercase;
+      letter-spacing: 0.08em; padding: 0.2rem 0.6rem; border-radius: 4px; font-weight: 700;
+    }
+    .card-priority.high { background: #3fb95022; color: var(--green); }
+    .card-priority.med  { background: #f0883e22; color: var(--orange); }
+    .card-priority.grow { background: #bc8cff22; color: var(--purple); }
+    .pain { color: var(--orange); font-weight: 600; }
+    .solution-list { margin: 0.5rem 0 1rem 1.5rem; }
+    .solution-list li { margin: 0.3rem 0; }
+    .solana-why {
+      background: var(--code-bg); border-left: 3px solid var(--purple);
+      padding: 0.75rem 1rem; border-radius: 0 6px 6px 0; margin: 1rem 0;
+      font-size: 0.92em; color: var(--text-muted);
+    }
+    .solana-why strong { color: var(--purple); }
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+    th, td { text-align: left; padding: 0.6rem 0.85rem; border: 1px solid var(--border); font-size: 0.9rem; }
+    th { background: var(--surface); font-weight: 600; color: var(--purple); }
+    td { background: var(--code-bg); }
+    code {
+      font-family: 'Fira Code', 'Cascadia Code', 'JetBrains Mono', monospace;
+      font-size: 0.88em; background: var(--code-bg); padding: 0.15em 0.4em; border-radius: 4px;
+    }
+    hr { border: none; border-top: 1px solid var(--border); margin: 3rem 0; }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="../index.html" class="logo">Delegacy</a>
+    <span class="chain-label evm">EVM</span>
+    <a href="architecture.html">Architecture</a>
+    <a href="integration-guide.html">Integration</a>
+    <a href="use-cases.html">Use Cases</a>
+    <span class="sep">│</span>
+    <span class="chain-label sol">SOLANA</span>
+    <a href="solana-architecture.html">Architecture</a>
+    <a href="solana-integration-guide.html">Integration</a>
+    <a href="solana-use-cases.html" class="active">Use Cases</a>
+  </nav>
+
+  <div class="container">
+    <span class="badge">Solana · Market Verticals</span>
+    <h1>Solana Use Cases</h1>
+    <p class="subtitle">
+      Solana's high throughput (65K TPS), sub-cent fees, and sub-second finality
+      unlock use cases that aren't economically viable on Ethereum L1.
+    </p>
+
+    <!-- ── 1. Gaming ──────────────────────────────────────── -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-icon">🎮</span>
+        <span class="card-title">1. Gaming</span>
+        <span class="card-priority high">Highest Priority</span>
+      </div>
+      <p><strong>Market:</strong> Solana gaming growing rapidly — Star Atlas, Aurory, Genopets</p>
+      <p class="pain">Pain: Every in-game action triggers a Phantom/Solflare popup. Players leave.</p>
+      <p><strong>Delegacy Solution:</strong></p>
+      <ul class="solution-list">
+        <li>Player signs once at game launch → plays for hours seamlessly</li>
+        <li>In-game purchases, NFT trades, item crafts — all instant via CPI</li>
+        <li>Game studio pays fees → player never sees "insufficient SOL"</li>
+      </ul>
+      <table>
+        <thead><tr><th>Policy</th><th>Configuration</th></tr></thead>
+        <tbody>
+          <tr><td>Allowlist</td><td>Game program IDs only</td></tr>
+          <tr><td>Spending Limit</td><td>5 SOL per session</td></tr>
+          <tr><td>Rate Limit</td><td>120 ops/min (fast gameplay)</td></tr>
+          <tr><td>Compute Limit</td><td>50M compute units</td></tr>
+          <tr><td>Time Bound</td><td>8-hour play sessions</td></tr>
+        </tbody>
+      </table>
+      <div class="solana-why"><strong>Why Solana:</strong> Sub-cent fees make micro-transactions viable. 65K TPS handles real-time multiplayer without batching.</div>
+    </div>
+
+    <!-- ── 2. DeFi ────────────────────────────────────────── -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-icon">📈</span>
+        <span class="card-title">2. DeFi — Automated Trading</span>
+        <span class="card-priority high">High Priority</span>
+      </div>
+      <p><strong>Market:</strong> $8B+ TVL — Jupiter, Raydium, Marinade, Orca, Drift</p>
+      <p class="pain">Pain: Users can't run trading bots without exposing their private key.</p>
+      <p><strong>Delegacy Solution:</strong></p>
+      <ul class="solution-list">
+        <li>Authorize a bot with strict spending limit and trading window</li>
+        <li>Bot executes swaps via Jupiter, LPs on Raydium — within guardrails</li>
+        <li>If bot goes rogue → on-chain policies enforce hard limits</li>
+      </ul>
+      <table>
+        <thead><tr><th>Policy</th><th>Configuration</th></tr></thead>
+        <tbody>
+          <tr><td>Allowlist</td><td>Jupiter, Raydium, Marinade program IDs</td></tr>
+          <tr><td>Spending Limit</td><td>50 SOL per 4-hour window</td></tr>
+          <tr><td>Rate Limit</td><td>60 trades/hour</td></tr>
+          <tr><td>Compute Limit</td><td>200M compute units</td></tr>
+          <tr><td>Time Bound</td><td>4-hour automated window</td></tr>
+        </tbody>
+      </table>
+      <div class="solana-why"><strong>Why Solana:</strong> ~400ms block times enable arbitrage and limit-order strategies. Low fees make frequent rebalancing economical.</div>
+    </div>
+
+    <!-- ── 3. Commerce ────────────────────────────────────── -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-icon">🛒</span>
+        <span class="card-title">3. Commerce &amp; Subscriptions</span>
+        <span class="card-priority med">Medium Priority</span>
+      </div>
+      <p><strong>Market:</strong> $1.2T subscription economy + Solana Pay ecosystem</p>
+      <p class="pain">Pain: No native crypto subscription model. Solana Pay is one-shot.</p>
+      <p><strong>Delegacy Solution:</strong></p>
+      <ul class="solution-list">
+        <li>USDC subscriptions — pre-authorize monthly charges</li>
+        <li>One-click checkout for Solana-native storefronts</li>
+        <li>Self-custodial — no payment processor middleman</li>
+        <li>Instant settlement (vs 3-5 business days with Stripe)</li>
+      </ul>
+      <table>
+        <thead><tr><th>Policy</th><th>Configuration</th></tr></thead>
+        <tbody>
+          <tr><td>Allowlist</td><td>Merchant payment program only</td></tr>
+          <tr><td>Spending Limit</td><td>$9.99/month USDC or $200/session</td></tr>
+          <tr><td>Rate Limit</td><td>1 charge/month (subscription)</td></tr>
+          <tr><td>Time Bound</td><td>Monthly renewal</td></tr>
+        </tbody>
+      </table>
+      <div class="solana-why"><strong>Why Solana:</strong> USDC on Solana has fastest settlement and lowest fees. Solana Pay QR infrastructure exists — Delegacy adds recurring payments.</div>
+    </div>
+
+    <!-- ── 4. Enterprise ──────────────────────────────────── -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-icon">🏢</span>
+        <span class="card-title">4. Enterprise &amp; Treasury</span>
+        <span class="card-priority med">Medium Priority</span>
+      </div>
+      <p><strong>Market:</strong> $250B+ corporate crypto holdings, growing Solana corporate adoption</p>
+      <p class="pain">Pain: Shared keys = zero accountability. Squads multisig = too slow for daily ops.</p>
+      <p><strong>Delegacy Solution:</strong></p>
+      <ul class="solution-list">
+        <li>Treasury manager holds master key (Ledger / Squads multisig)</li>
+        <li>Employees get role-based session keys with spending limits</li>
+        <li>Full on-chain audit trail per session key</li>
+        <li>Emergency revocation in one transaction</li>
+      </ul>
+      <table>
+        <thead><tr><th>Policy</th><th>Configuration</th></tr></thead>
+        <tbody>
+          <tr><td>Allowlist</td><td>Payroll / vendor payment programs</td></tr>
+          <tr><td>Spending Limit</td><td>Per-role: $200 intern → $500K finance</td></tr>
+          <tr><td>Rate Limit</td><td>Department-appropriate limits</td></tr>
+          <tr><td>Time Bound</td><td>Per-shift or per-quarter</td></tr>
+        </tbody>
+      </table>
+      <div class="solana-why"><strong>Why Solana:</strong> Squads Protocol integration potential. PDAs provide deterministic, auditable account addresses. Low fees enable granular policy checks.</div>
+    </div>
+
+    <!-- ── 5. Social ──────────────────────────────────────── -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-icon">💬</span>
+        <span class="card-title">5. Social &amp; Creator Economy</span>
+        <span class="card-priority grow">Growing</span>
+      </div>
+      <p><strong>Market:</strong> Solana social — Dialect, Backpack XNFT, social tokens</p>
+      <p class="pain">Pain: Micro-transactions (tips, boosts) need to be instant and near-free.</p>
+      <p><strong>Delegacy Solution:</strong></p>
+      <ul class="solution-list">
+        <li>Browse/scroll session with 1 SOL daily budget</li>
+        <li>Every tip, boost, collect is instant — no popup</li>
+        <li>Creators receive tips directly — no platform cut</li>
+        <li>Sub-cent fees make $0.01 tips economically viable</li>
+      </ul>
+      <table>
+        <thead><tr><th>Policy</th><th>Configuration</th></tr></thead>
+        <tbody>
+          <tr><td>Allowlist</td><td>Tipping + boost + collectible programs</td></tr>
+          <tr><td>Spending Limit</td><td>1 SOL/day micro-budget</td></tr>
+          <tr><td>Rate Limit</td><td>200 actions/hour</td></tr>
+          <tr><td>Time Bound</td><td>24-hour browsing session</td></tr>
+        </tbody>
+      </table>
+      <div class="solana-why"><strong>Why Solana:</strong> $0.0005 per transaction makes $0.01 tips viable. Compressed NFTs (cNFTs) enable mass collectible distribution.</div>
+    </div>
+
+    <!-- ── 6. IoT ─────────────────────────────────────────── -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-icon">🤖</span>
+        <span class="card-title">6. IoT &amp; Machine Economy</span>
+        <span class="card-priority grow">Growing</span>
+      </div>
+      <p><strong>Market:</strong> $1.1T IoT by 2028. Helium already migrated to Solana.</p>
+      <p class="pain">Pain: Devices need autonomous on-chain transactions but can't hold full keys.</p>
+      <p><strong>Delegacy Solution:</strong></p>
+      <ul class="solution-list">
+        <li>Each device gets a daily session key from a fleet manager</li>
+        <li>Devices transact autonomously within strict budgets</li>
+        <li>Compromised device → session key is scoped, not a master key</li>
+        <li>24-hour key rotation is automatic</li>
+      </ul>
+      <table>
+        <thead><tr><th>Policy</th><th>Configuration</th></tr></thead>
+        <tbody>
+          <tr><td>Allowlist</td><td>Toll / charging / telemetry programs</td></tr>
+          <tr><td>Spending Limit</td><td>50 SOL/day per vehicle</td></tr>
+          <tr><td>Rate Limit</td><td>500 ops/day</td></tr>
+          <tr><td>Compute Limit</td><td>100M CU/day</td></tr>
+          <tr><td>Time Bound</td><td>24-hour rotation</td></tr>
+        </tbody>
+      </table>
+      <div class="solana-why"><strong>Why Solana:</strong> Helium's migration proves Solana handles IoT-scale throughput. Low fees enable high-frequency sensor data submission.</div>
+    </div>
+
+    <hr>
+
+    <h2>Revenue Model</h2>
+    <table>
+      <thead><tr><th>Tier</th><th>Price</th><th>Included</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Free</strong></td><td>$0/mo</td><td>1,000 transactions, devnet only, community support</td></tr>
+        <tr><td><strong>Growth</strong></td><td>$99/mo</td><td>50,000 transactions, all clusters, email support</td></tr>
+        <tr><td><strong>Scale</strong></td><td>$499/mo</td><td>500,000 transactions, priority support, custom policies</td></tr>
+        <tr><td><strong>Enterprise</strong></td><td>Custom</td><td>Unlimited, SLA, dedicated support, on-prem RPC</td></tr>
+      </tbody>
+    </table>
+  </div>
+</body>
+</html>

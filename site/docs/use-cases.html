@@ -1,0 +1,408 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Use Cases — Delegacy</title>
+  <style>
+    :root {
+      --bg: #0d1117;
+      --surface: #161b22;
+      --border: #30363d;
+      --text: #e6edf3;
+      --text-muted: #8b949e;
+      --accent: #58a6ff;
+      --accent-subtle: #1f6feb22;
+      --green: #3fb950;
+      --code-bg: #1c2129;
+      --purple: #bc8cff;
+      --orange: #f0883e;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      padding: 0;
+    }
+    nav {
+      position: sticky;
+      top: 0;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+      z-index: 100;
+    }
+    nav .logo {
+      font-weight: 700;
+      font-size: 1.2rem;
+      color: var(--accent);
+      text-decoration: none;
+    }
+    nav a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: color 0.2s;
+    }
+    nav a:hover, nav a.active { color: var(--text); }
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 3rem 2rem 6rem;
+    }
+    h1 {
+      font-size: 2.4rem;
+      margin-bottom: 0.5rem;
+      background: linear-gradient(135deg, var(--accent), var(--green));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .subtitle {
+      color: var(--text-muted);
+      font-size: 1.1rem;
+      margin-bottom: 2rem;
+    }
+    h2 {
+      font-size: 1.5rem;
+      margin: 2.5rem 0 1rem;
+      color: var(--text);
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 0.5rem;
+    }
+    h3 { font-size: 1.05rem; margin: 1rem 0 0.5rem; color: var(--accent); }
+    hr {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 3rem 0;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+    }
+    th, td {
+      text-align: left;
+      padding: 0.75rem 1rem;
+      border: 1px solid var(--border);
+    }
+    th {
+      background: var(--surface);
+      font-weight: 600;
+      color: var(--accent);
+    }
+    td { background: var(--code-bg); }
+    p { margin: 0.75rem 0; }
+    ul, ol { margin: 0.5rem 0; padding-left: 1.5rem; }
+    li { margin: 0.3rem 0; }
+    strong { color: var(--text); }
+    .badge {
+      display: inline-block;
+      background: var(--accent-subtle);
+      color: var(--accent);
+      padding: 0.15rem 0.6rem;
+      border-radius: 12px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+    }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 2rem;
+      margin: 2rem 0;
+    }
+    .card-header {
+      display: flex;
+      align-items: baseline;
+      gap: 1rem;
+      margin-bottom: 0.5rem;
+    }
+    .card-header h2 {
+      margin: 0;
+      border: none;
+      padding: 0;
+    }
+    .card-priority {
+      font-size: 0.75rem;
+      padding: 0.15rem 0.5rem;
+      border-radius: 10px;
+      font-weight: 600;
+    }
+    .priority-high { background: #3fb95022; color: var(--green); }
+    .priority-mid { background: #d2992222; color: var(--orange); }
+    .market-size {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      margin-bottom: 0.75rem;
+    }
+    .pain {
+      background: #f8514918;
+      border-left: 3px solid #f85149;
+      padding: 0.6rem 1rem;
+      border-radius: 0 6px 6px 0;
+      margin: 0.75rem 0;
+      font-size: 0.95rem;
+    }
+    .solution {
+      margin: 0.75rem 0;
+    }
+    .solution ul { list-style: none; padding: 0; }
+    .solution li::before {
+      content: '→ ';
+      color: var(--green);
+      font-weight: 700;
+    }
+    .targets {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      margin-top: 1rem;
+    }
+    .targets strong { color: var(--accent); }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="../index.html" class="logo">Delegacy</a>
+    <span style="font-size:0.7rem;text-transform:uppercase;letter-spacing:0.08em;padding:0.15rem 0.5rem;border-radius:4px;font-weight:700;background:#3fb95022;color:#3fb950">EVM</span>
+    <a href="architecture.html">Architecture</a>
+    <a href="integration-guide.html">Integration</a>
+    <a href="use-cases.html" class="active">Use Cases</a>
+    <span style="color:#30363d;font-size:1.2rem;user-select:none">│</span>
+    <span style="font-size:0.7rem;text-transform:uppercase;letter-spacing:0.08em;padding:0.15rem 0.5rem;border-radius:4px;font-weight:700;background:#bc8cff22;color:#bc8cff">SOLANA</span>
+    <a href="solana-architecture.html">Architecture</a>
+    <a href="solana-integration-guide.html">Integration</a>
+    <a href="solana-use-cases.html">Use Cases</a>
+  </nav>
+
+  <div class="container">
+    <span class="badge">Business &amp; Strategy</span>
+    <h1>Use Cases</h1>
+    <p class="subtitle">Where Delegacy Fits — horizontal infrastructure for every app touching digital assets.</p>
+
+    <!-- 1. Gaming -->
+    <div class="card">
+      <div class="card-header">
+        <h2>1. Gaming</h2>
+        <span class="card-priority priority-high">Highest Priority</span>
+      </div>
+      <p class="market-size">Market Size: $3.2B blockchain gaming (2025), projected $65B by 2030</p>
+      <div class="pain">
+        <strong>Pain Point:</strong> Every in-game action triggers a wallet popup. Players leave.
+      </div>
+      <div class="solution">
+        <h3>Delegacy Solution</h3>
+        <ul>
+          <li>Player signs once at game launch &rarr; plays for hours seamlessly</li>
+          <li>In-game purchases, NFT trades, character movements &mdash; all instant</li>
+          <li>Studio sponsors gas &rarr; player never sees "insufficient ETH"</li>
+        </ul>
+      </div>
+      <table>
+        <thead><tr><th>Policy</th><th>Configuration</th></tr></thead>
+        <tbody>
+          <tr><td>Allowlist</td><td>Game contracts + specific functions only</td></tr>
+          <tr><td>Spending Limit</td><td>$20/session on in-game purchases</td></tr>
+          <tr><td>Rate Limit</td><td>120 ops/min (fast gameplay)</td></tr>
+          <tr><td>Time Bound</td><td>8-hour play sessions</td></tr>
+        </tbody>
+      </table>
+      <p class="targets"><strong>Target Customers:</strong> Immutable, Sky Mavis (Axie), Treasure DAO, indie studios</p>
+    </div>
+
+    <!-- 2. DeFi -->
+    <div class="card">
+      <div class="card-header">
+        <h2>2. DeFi — Automated Trading</h2>
+      </div>
+      <p class="market-size">Market Size: $50B+ TVL across DeFi protocols</p>
+      <div class="pain">
+        <strong>Pain Point:</strong> Users can't run trading bots without exposing their private key.
+      </div>
+      <div class="solution">
+        <h3>Delegacy Solution</h3>
+        <ul>
+          <li>User authorizes a bot with a strict spending limit and trading window</li>
+          <li>Bot executes swaps, provides liquidity &mdash; within the user's guardrails</li>
+          <li>If bot goes rogue &rarr; can't exceed the on-chain enforced policies</li>
+        </ul>
+      </div>
+      <table>
+        <thead><tr><th>Policy</th><th>Configuration</th></tr></thead>
+        <tbody>
+          <tr><td>Allowlist</td><td>Only Uniswap/Aave/1inch routers</td></tr>
+          <tr><td>Spending Limit</td><td>$500 per 4-hour window</td></tr>
+          <tr><td>Rate Limit</td><td>20 trades/hour</td></tr>
+          <tr><td>Time Bound</td><td>4-hour automated window</td></tr>
+        </tbody>
+      </table>
+      <p class="targets"><strong>Target Customers:</strong> DeFi aggregators, yield optimizers, trading platforms</p>
+    </div>
+
+    <!-- 3. Commerce -->
+    <div class="card">
+      <div class="card-header">
+        <h2>3. Commerce &amp; Subscriptions</h2>
+      </div>
+      <p class="market-size">Market Size: $1.2T global subscription economy</p>
+      <div class="pain">
+        <strong>Pain Point:</strong> No native crypto subscription model. No "save card" equivalent.
+      </div>
+      <div class="solution">
+        <h3>Delegacy Solution</h3>
+        <ul>
+          <li>Users authorize recurring charges (like subscribing to Spotify)</li>
+          <li>One-click checkout for e-commerce (like Apple Pay)</li>
+          <li>Self-custodial &mdash; no payment processor middleman</li>
+          <li>Instant global settlement</li>
+        </ul>
+      </div>
+      <table>
+        <thead><tr><th>Policy</th><th>Configuration</th></tr></thead>
+        <tbody>
+          <tr><td>Allowlist</td><td>Merchant payment contract only</td></tr>
+          <tr><td>Spending Limit</td><td>$9.99/month or $200/session</td></tr>
+          <tr><td>Rate Limit</td><td>1 charge/month (subscription)</td></tr>
+          <tr><td>Time Bound</td><td>Monthly renewal</td></tr>
+        </tbody>
+      </table>
+      <p class="targets"><strong>Target Customers:</strong> Crypto-native SaaS, NFT marketplaces, media platforms</p>
+    </div>
+
+    <!-- 4. Enterprise -->
+    <div class="card">
+      <div class="card-header">
+        <h2>4. Enterprise &amp; Treasury</h2>
+      </div>
+      <p class="market-size">Market Size: $250B+ corporate crypto holdings</p>
+      <div class="pain">
+        <strong>Pain Point:</strong> Shared keys = zero accountability. Multi-sig = too slow for daily ops.
+      </div>
+      <div class="solution">
+        <h3>Delegacy Solution</h3>
+        <ul>
+          <li>CFO holds master key (hardware wallet)</li>
+          <li>Employees get role-based session keys with spending limits</li>
+          <li>Full on-chain audit trail per session key</li>
+          <li>Emergency revocation in one click</li>
+        </ul>
+      </div>
+      <table>
+        <thead><tr><th>Policy</th><th>Configuration</th></tr></thead>
+        <tbody>
+          <tr><td>Allowlist</td><td>Approved vendor/payroll contracts</td></tr>
+          <tr><td>Spending Limit</td><td>Per-role budgets ($200 intern &rarr; $500K finance)</td></tr>
+          <tr><td>Rate Limit</td><td>Department-appropriate</td></tr>
+          <tr><td>Time Bound</td><td>Per-shift or per-quarter</td></tr>
+        </tbody>
+      </table>
+      <p class="targets"><strong>Target Customers:</strong> DAOs, crypto-native companies, traditional finance moving on-chain</p>
+    </div>
+
+    <!-- 5. Social -->
+    <div class="card">
+      <div class="card-header">
+        <h2>5. Social &amp; Creator Economy</h2>
+      </div>
+      <p class="market-size">Market Size: $250B creator economy + growing Web3 social</p>
+      <div class="pain">
+        <strong>Pain Point:</strong> Micro-transactions (tips, boosts, likes) need to be instant.
+      </div>
+      <div class="solution">
+        <h3>Delegacy Solution</h3>
+        <ul>
+          <li>Browse/scroll session with $10 daily budget</li>
+          <li>Every tip, boost, collect is instant &mdash; no popup</li>
+          <li>Creators receive tips directly &mdash; no platform cut enforced by code</li>
+        </ul>
+      </div>
+      <table>
+        <thead><tr><th>Policy</th><th>Configuration</th></tr></thead>
+        <tbody>
+          <tr><td>Allowlist</td><td>Tipping + boost + collect contracts</td></tr>
+          <tr><td>Spending Limit</td><td>$10/day micro-budget</td></tr>
+          <tr><td>Rate Limit</td><td>200 actions/hour</td></tr>
+          <tr><td>Time Bound</td><td>24-hour browsing session</td></tr>
+        </tbody>
+      </table>
+      <p class="targets"><strong>Target Customers:</strong> Farcaster ecosystem, Lens ecosystem, BasePaint, Friend.tech</p>
+    </div>
+
+    <!-- 6. IoT -->
+    <div class="card">
+      <div class="card-header">
+        <h2>6. IoT &amp; Machine Economy</h2>
+      </div>
+      <p class="market-size">Market Size: $1.1T IoT market by 2028</p>
+      <div class="pain">
+        <strong>Pain Point:</strong> Devices need autonomous on-chain transactions but can't hold full keys.
+      </div>
+      <div class="solution">
+        <h3>Delegacy Solution</h3>
+        <ul>
+          <li>Each device gets a daily session key from a fleet manager</li>
+          <li>Devices transact autonomously within strict budgets</li>
+          <li>If a device is compromised &rarr; session key is scoped, not a master key</li>
+        </ul>
+      </div>
+      <table>
+        <thead><tr><th>Policy</th><th>Configuration</th></tr></thead>
+        <tbody>
+          <tr><td>Allowlist</td><td>Toll/charging/telemetry contracts</td></tr>
+          <tr><td>Spending Limit</td><td>$50/day per vehicle</td></tr>
+          <tr><td>Rate Limit</td><td>500 ops/day</td></tr>
+          <tr><td>Time Bound</td><td>24-hour rotation</td></tr>
+        </tbody>
+      </table>
+      <p class="targets"><strong>Target Customers:</strong> Fleet operators, supply chain platforms, smart city infrastructure</p>
+    </div>
+
+    <hr>
+
+    <h2>Revenue Model</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Tier</th>
+          <th>Price</th>
+          <th>Included</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Free</strong></td>
+          <td>$0/mo</td>
+          <td>1,000 UserOps, 1 chain, community support</td>
+        </tr>
+        <tr>
+          <td><strong>Growth</strong></td>
+          <td>$99/mo</td>
+          <td>50,000 UserOps, all chains, email support</td>
+        </tr>
+        <tr>
+          <td><strong>Scale</strong></td>
+          <td>$499/mo</td>
+          <td>500,000 UserOps, all chains, priority support, custom policies</td>
+        </tr>
+        <tr>
+          <td><strong>Enterprise</strong></td>
+          <td>Custom</td>
+          <td>Unlimited, SLA, dedicated support, on-prem option</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>Additional revenue:</p>
+    <ul>
+      <li><strong>Paymaster fees</strong> — 1% of sponsored gas (developer pays, user's experience is free)</li>
+      <li><strong>Premium policies</strong> — Custom policy development for enterprise clients</li>
+      <li><strong>Analytics dashboard</strong> — Usage metrics, spending reports, session analytics</li>
+    </ul>
+  </div>
+</body>
+</html>

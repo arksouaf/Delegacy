@@ -1,0 +1,28 @@
+﻿{
+  "name": "@delegacy/sdk",
+  "version": "0.1.0",
+  "description": "TypeScript SDK for integrating Delegacy session key wallets",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "clean": "rimraf dist",
+    "lint": "eslint src/"
+  },
+  "dependencies": {
+    "viem": "^2.21.0",
+    "permissionless": "^0.2.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.0",
+    "vitest": "^2.0.0",
+    "rimraf": "^6.0.0",
+    "eslint": "^9.0.0"
+  },
+  "peerDependencies": {
+    "viem": "^2.0.0"
+  }
+}

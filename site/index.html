@@ -1,0 +1,1545 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Delegacy — Session Key Infrastructure for Web3</title>
+  <meta name="description" content="The B2B infrastructure platform for session key wallets. Sign once, transact forever — on-chain enforced policies across EVM and Solana." />
+  <meta property="og:title"       content="Delegacy — Session Key Infrastructure" />
+  <meta property="og:description" content="Sign once. Transact forever. On-chain enforced policies on EVM + Solana." />
+  <meta property="og:type"        content="website" />
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔑</text></svg>" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ═══════════════════════════════════════════════════════
+       DESIGN TOKENS
+    ═══════════════════════════════════════════════════════ */
+    :root {
+      --bg:           #02091a;
+      --bg2:          #040d20;
+      --surface:      #07152b;
+      --surface2:     #0b1d39;
+      --card:         #0d2040;
+      --border:       #152c4e;
+      --border2:      #1e4170;
+      --text:         #e2e8f0;
+      --text-dim:     #94a3b8;
+      --text-muted:   #48637a;
+      --blue:         #38bdf8;
+      --blue-mid:     #0ea5e9;
+      --blue-dark:    #0284c7;
+      --cyan:         #22d3ee;
+      --teal:         #2dd4bf;
+      --purple:       #a78bfa;
+      --purple-mid:   #7c3aed;
+      --green:        #34d399;
+      --amber:        #fbbf24;
+      --red:          #f87171;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      overflow-x: hidden;
+      line-height: 1.65;
+    }
+
+    /* ── Dot-grid background ────────────────────────────── */
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background:
+        radial-gradient(ellipse 80% 50% at 50% -10%, rgba(14,165,233,0.12) 0%, transparent 60%),
+        linear-gradient(rgba(56,189,248,0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(56,189,248,0.025) 1px, transparent 1px);
+      background-size: 100% 100%, 64px 64px, 64px 64px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    section, nav, footer { position: relative; z-index: 1; }
+    .container { max-width: 1160px; margin: 0 auto; padding: 0 1.5rem; }
+
+    a { text-decoration: none; color: var(--blue); transition: color .2s; }
+    a:hover { color: var(--cyan); }
+
+    /* ── Gradient text helpers ──────────────────────────── */
+    .grad { background: linear-gradient(135deg, var(--blue), var(--cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .grad-pur { background: linear-gradient(135deg, var(--purple), var(--blue)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+
+    /* ── Buttons ────────────────────────────────────────── */
+    .btn {
+      display: inline-flex; align-items: center; gap: .4rem;
+      padding: .55rem 1.35rem; border-radius: 8px;
+      font-size: .9rem; font-weight: 600; cursor: pointer;
+      border: none; font-family: 'Inter', sans-serif;
+      transition: all .2s; white-space: nowrap;
+      text-decoration: none;
+    }
+    .btn-ghost {
+      background: transparent;
+      color: var(--text-dim);
+      border: 1px solid var(--border2);
+    }
+    .btn-ghost:hover { color: var(--text); border-color: var(--blue-mid); }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--blue-mid), var(--cyan));
+      color: #fff;
+      box-shadow: 0 0 24px rgba(14,165,233,.35);
+    }
+    .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 0 36px rgba(14,165,233,.55); }
+    .btn-outline {
+      background: transparent;
+      color: var(--blue);
+      border: 1px solid var(--blue-mid);
+    }
+    .btn-outline:hover { background: rgba(14,165,233,.08); }
+    .btn-lg { padding: .8rem 2rem; font-size: 1rem; }
+
+    /* ═══════════════════════════════════════════════════════
+       NAVBAR
+    ═══════════════════════════════════════════════════════ */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+      background: rgba(2,9,26,.82);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border-bottom: 1px solid var(--border);
+      transition: border-color .3s;
+    }
+    .nav-inner {
+      max-width: 1160px; margin: 0 auto;
+      display: flex; align-items: center;
+      height: 64px; padding: 0 1.5rem; gap: 2rem;
+    }
+    .nav-logo {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 800; font-size: 1.2rem;
+      color: var(--text) !important;
+      display: flex; align-items: center; gap: .5rem;
+      flex-shrink: 0;
+    }
+    .logo-icon {
+      width: 30px; height: 30px; border-radius: 7px;
+      background: linear-gradient(135deg, var(--blue-mid), var(--cyan));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 15px;
+    }
+    .nav-links {
+      display: flex; gap: 1.75rem; list-style: none; flex: 1;
+    }
+    .nav-links a { color: var(--text-dim); font-size: .875rem; font-weight: 500; }
+    .nav-links a:hover { color: var(--text); }
+    .nav-right { margin-left: auto; display: flex; align-items: center; gap: .75rem; }
+
+    /* ═══════════════════════════════════════════════════════
+       HERO
+    ═══════════════════════════════════════════════════════ */
+    .hero {
+      min-height: 100vh; display: flex; align-items: center;
+      padding-top: 64px; overflow: hidden;
+    }
+    .hero-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 4rem; align-items: center;
+      padding: 6rem 0 5rem;
+    }
+    .hero-tag {
+      display: inline-flex; align-items: center; gap: .5rem;
+      background: rgba(14,165,233,.1); border: 1px solid rgba(14,165,233,.3);
+      padding: .28rem .9rem; border-radius: 100px;
+      font-size: .73rem; font-weight: 700; color: var(--blue);
+      letter-spacing: .06em; text-transform: uppercase;
+      margin-bottom: 1.5rem;
+    }
+    .hero-tag-dot {
+      width: 6px; height: 6px; border-radius: 50%; background: var(--blue);
+      animation: blink 2s infinite;
+    }
+    @keyframes blink { 0%,100%{opacity:1;} 50%{opacity:.3;} }
+
+    .hero-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(2.4rem, 4.5vw, 3.75rem);
+      font-weight: 800; line-height: 1.08;
+      letter-spacing: -.03em; margin-bottom: 1.25rem;
+    }
+    .hero-sub {
+      font-size: 1.08rem; color: var(--text-dim); max-width: 490px;
+      line-height: 1.7; margin-bottom: 2.25rem;
+    }
+    .hero-actions { display: flex; gap: .75rem; flex-wrap: wrap; }
+    .hero-actions .btn { padding: .75rem 1.75rem; font-size: .95rem; }
+
+    .hero-trust {
+      display: flex; align-items: center; gap: 1rem;
+      margin-top: 2rem; font-size: .78rem; color: var(--text-muted);
+    }
+    .hero-trust-dots { display: flex; }
+    .hero-trust-dots span {
+      width: 22px; height: 22px; border-radius: 50%;
+      border: 2px solid var(--bg); background: var(--surface2);
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: 10px; margin-left: -6px;
+    }
+    .hero-trust-dots span:first-child { margin-left: 0; }
+
+    /* ── Code Window ────────────────────────────────────── */
+    .code-win {
+      background: var(--surface);
+      border: 1px solid var(--border2);
+      border-radius: 14px; overflow: hidden;
+      box-shadow: 0 30px 80px rgba(0,0,0,.7), 0 0 80px rgba(14,165,233,.07);
+    }
+    .code-bar {
+      display: flex; align-items: center; gap: .45rem;
+      padding: .75rem 1rem; background: rgba(0,0,0,.35);
+      border-bottom: 1px solid var(--border);
+    }
+    .dot { width: 11px; height: 11px; border-radius: 50%; flex-shrink: 0; }
+    .d-r { background: #ff5f57; } .d-a { background: #febc2e; } .d-g { background: #28c840; }
+    .code-fname {
+      font-family: 'JetBrains Mono', monospace; font-size: .72rem;
+      color: var(--text-muted); margin-left: .35rem;
+    }
+    .code-body {
+      padding: 1.5rem 1.6rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .77rem; line-height: 1.85;
+      overflow-x: auto; color: var(--text-dim);
+    }
+    .code-body .kw  { color: #7dd3fc; }
+    .code-body .fn  { color: #c084fc; }
+    .code-body .str { color: #86efac; }
+    .code-body .num { color: #fbbf24; }
+    .code-body .cm  { color: #3d5873; font-style: italic; }
+    .code-body .typ { color: #67e8f9; }
+    .code-body .op  { color: #94a3b8; }
+
+    /* ═══════════════════════════════════════════════════════
+       STATS BAR
+    ═══════════════════════════════════════════════════════ */
+    .stats-bar {
+      background: var(--surface);
+      border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
+    }
+    .stats-inner {
+      display: grid; grid-template-columns: repeat(4,1fr);
+    }
+    .stat {
+      text-align: center; padding: 2rem 1rem;
+      border-right: 1px solid var(--border);
+    }
+    .stat:last-child { border-right: none; }
+    .stat-val {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 2.1rem; font-weight: 800; display: block;
+      background: linear-gradient(135deg, var(--blue), var(--cyan));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .stat-lbl {
+      font-size: .72rem; color: var(--text-muted);
+      text-transform: uppercase; letter-spacing: .08em; margin-top: .2rem;
+    }
+
+    /* ═══════════════════════════════════════════════════════
+       SECTION LAYOUT
+    ═══════════════════════════════════════════════════════ */
+    .section { padding: 6.5rem 0; }
+    .section-sm { padding: 4rem 0; }
+    .section-hdr { text-align: center; margin-bottom: 3.5rem; }
+    .section-tag {
+      display: inline-block; font-size: .7rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: .12em;
+      color: var(--blue); margin-bottom: .6rem;
+    }
+    .section-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(1.8rem, 3.2vw, 2.5rem);
+      font-weight: 800; line-height: 1.15; letter-spacing: -.025em;
+      margin-bottom: .9rem;
+    }
+    .section-sub {
+      font-size: .95rem; color: var(--text-dim); max-width: 540px; margin: 0 auto;
+    }
+
+    /* ═══════════════════════════════════════════════════════
+       PROBLEM / SOLUTION
+    ═══════════════════════════════════════════════════════ */
+    .compare { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    .cmp-card {
+      border-radius: 16px; padding: 2rem;
+      border: 1px solid transparent;
+    }
+    .cmp-card.bad  { background: rgba(248,113,113,.04); border-color: rgba(248,113,113,.18); }
+    .cmp-card.good { background: rgba(56,189,248,.04);  border-color: rgba(56,189,248,.2); }
+    .cmp-head {
+      display: flex; align-items: center; gap: .6rem;
+      font-weight: 700; font-size: 1rem; margin-bottom: 1.5rem;
+    }
+    .cmp-row {
+      display: flex; gap: .75rem; align-items: flex-start;
+      font-size: .875rem; color: var(--text-dim); margin-bottom: 1rem;
+    }
+    .cmp-row .ci { font-size: 1rem; flex-shrink: 0; margin-top: .05rem; }
+
+    /* ═══════════════════════════════════════════════════════
+       HOW IT WORKS
+    ═══════════════════════════════════════════════════════ */
+    .steps { display: grid; grid-template-columns: repeat(3,1fr); gap: 1.5rem; position: relative; }
+    .steps::after {
+      content: '';
+      position: absolute; top: 28px; left: calc(16.6% + 1px); right: calc(16.6% + 1px); height: 1px;
+      background: linear-gradient(90deg, rgba(56,189,248,.1), rgba(56,189,248,.4), rgba(34,211,238,.4), rgba(34,211,238,.1));
+    }
+    .step {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 16px; padding: 2rem;
+      transition: border-color .3s, transform .3s;
+    }
+    .step:hover { border-color: var(--border2); transform: translateY(-4px); }
+    .step-num {
+      width: 48px; height: 48px; border-radius: 12px;
+      background: linear-gradient(135deg, rgba(14,165,233,.18), rgba(6,182,212,.18));
+      border: 1px solid rgba(14,165,233,.3);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 800; font-size: 1.25rem; color: var(--blue);
+      margin-bottom: 1.25rem;
+    }
+    .step-title { font-family:'Space Grotesk',sans-serif; font-weight:700; margin-bottom:.5rem; }
+    .step-body { font-size:.875rem; color:var(--text-dim); line-height:1.6; }
+
+    /* ═══════════════════════════════════════════════════════
+       CHAINS STRIP
+    ═══════════════════════════════════════════════════════ */
+    .chains-strip {
+      padding: 3.5rem 0;
+      border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
+      background: var(--surface);
+    }
+    .chains-label {
+      text-align: center; font-size: .7rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: .12em;
+      color: var(--text-muted); margin-bottom: 2rem;
+    }
+    .chains-row { display: flex; justify-content: center; align-items: center; gap: 2.5rem; flex-wrap: wrap; }
+    .chain-item {
+      display: flex; flex-direction: column; align-items: center; gap: .45rem;
+      opacity: .65; transition: opacity .2s, transform .2s; cursor: default;
+    }
+    .chain-item:hover { opacity: 1; transform: translateY(-2px); }
+    .chain-icon {
+      width: 48px; height: 48px; border-radius: 12px;
+      background: var(--card); border: 1px solid var(--border2);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 24px;
+    }
+    .chain-lbl { font-size: .72rem; font-weight: 600; color: var(--text-dim); }
+    .chain-badge {
+      font-size: .6rem; font-weight: 700; letter-spacing: .05em;
+      padding: .1rem .4rem; border-radius: 3px;
+      background: rgba(14,165,233,.12); color: var(--blue);
+    }
+
+    /* ═══════════════════════════════════════════════════════
+       POLICIES
+    ═══════════════════════════════════════════════════════ */
+    .policies-grid {
+      display: grid; grid-template-columns: repeat(3,1fr); gap: 1.25rem;
+    }
+    .pol-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 14px; padding: 1.75rem;
+      transition: border-color .3s, box-shadow .3s, transform .3s;
+    }
+    .pol-card:hover {
+      border-color: var(--border2);
+      box-shadow: 0 8px 40px rgba(14,165,233,.07);
+      transform: translateY(-3px);
+    }
+    .pol-icon { font-size: 1.75rem; margin-bottom: 1rem; }
+    .pol-name { font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:.95rem; margin-bottom:.4rem; }
+    .pol-desc { font-size:.82rem; color:var(--text-dim); line-height:1.55; margin-bottom:1rem; }
+    .pol-badge {
+      display: inline-flex; align-items: center; gap: .3rem;
+      font-size: .7rem; font-weight: 600;
+      padding: .18rem .6rem; border-radius: 4px;
+    }
+    .pol-badge.evm { background: rgba(52,211,153,.1); color: var(--green); }
+    .pol-badge.sol { background: rgba(167,139,250,.1); color: var(--purple); }
+    .pol-code {
+      font-family: 'JetBrains Mono', monospace; font-size: .7rem;
+      background: var(--bg2); color: var(--text-muted);
+      padding: .6rem .85rem; border-radius: 6px; border: 1px solid var(--border);
+      margin-top: .75rem; line-height: 1.6;
+    }
+    .pol-code .fn  { color: #c084fc; }
+    .pol-code .num { color: var(--amber); }
+    .pol-code .str { color: #86efac; }
+
+    /* ═══════════════════════════════════════════════════════
+       USE CASES
+    ═══════════════════════════════════════════════════════ */
+    .uc-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1.25rem; }
+    .uc-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 14px; padding: 1.75rem;
+      transition: border-color .3s, transform .3s;
+    }
+    .uc-card:hover { border-color: var(--border2); transform: translateY(-3px); }
+    .uc-emoji { font-size: 2.2rem; margin-bottom: .75rem; }
+    .uc-title { font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:1.05rem; margin-bottom:.3rem; }
+    .uc-market { font-size:.73rem; font-weight:700; color:var(--cyan); margin-bottom:.6rem; letter-spacing:.03em; }
+    .uc-desc { font-size:.84rem; color:var(--text-dim); line-height:1.55; margin-bottom:1rem; }
+    .uc-tags { display:flex; flex-wrap:wrap; gap:.4rem; }
+    .uc-tag {
+      font-size:.68rem; font-weight:600;
+      padding:.15rem .55rem; border-radius:4px;
+      background: rgba(56,189,248,.08); color:var(--blue);
+      border:1px solid rgba(56,189,248,.15);
+    }
+
+    /* ═══════════════════════════════════════════════════════
+       CODE DEMO
+    ═══════════════════════════════════════════════════════ */
+    .demo-layout { display: grid; grid-template-columns: 1fr 1.4fr; gap: 3rem; align-items: start; }
+    .demo-copy { padding-top: 1rem; }
+    .demo-copy h2 { font-family:'Space Grotesk',sans-serif; font-size:2rem; font-weight:800; margin-bottom:1rem; letter-spacing:-.025em; }
+    .demo-copy p { font-size:.9rem; color:var(--text-dim); margin-bottom:1rem; line-height:1.65; }
+    .demo-feature {
+      display: flex; gap: .65rem; align-items: flex-start;
+      font-size: .85rem; color: var(--text-dim); margin-bottom: .8rem;
+    }
+    .demo-feature .check { color: var(--green); font-weight: 700; flex-shrink: 0; margin-top: .05rem; }
+
+    .tabs-bar { display: flex; gap: .3rem; margin-bottom: 1rem; }
+    .tab {
+      padding: .4rem 1rem; border-radius: 7px; font-size: .78rem;
+      font-weight: 600; cursor: pointer; border: 1px solid var(--border);
+      background: transparent; color: var(--text-dim);
+      font-family: 'Inter', sans-serif; transition: all .2s;
+    }
+    .tab.active {
+      background: rgba(14,165,233,.12);
+      border-color: var(--blue-mid); color: var(--blue);
+    }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* ═══════════════════════════════════════════════════════
+       SECURITY
+    ═══════════════════════════════════════════════════════ */
+    .sec-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; }
+    .sec-list { list-style: none; }
+    .sec-item {
+      display: flex; gap: .85rem; align-items: flex-start;
+      padding: 1.1rem 0; border-bottom: 1px solid var(--border);
+    }
+    .sec-item:last-child { border-bottom: none; }
+    .sec-ico {
+      width: 38px; height: 38px; flex-shrink: 0; border-radius: 9px;
+      background: rgba(14,165,233,.09); border: 1px solid rgba(14,165,233,.2);
+      display: flex; align-items: center; justify-content: center; font-size: 1.1rem;
+    }
+    .sec-head { font-weight: 600; font-size: .9rem; margin-bottom: .2rem; }
+    .sec-body { font-size: .8rem; color: var(--text-dim); line-height: 1.5; }
+
+    /* ── Flow diagram ────────────────────────────────────── */
+    .flow-box {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 16px; padding: 2rem;
+    }
+    .flow-layer {
+      background: var(--card); border: 1px solid var(--border2);
+      border-radius: 10px; padding: .9rem 1.2rem;
+      font-size: .82rem; font-family: 'JetBrains Mono', monospace;
+      color: var(--text-dim); position: relative;
+    }
+    .flow-layer.hl { border-color: var(--blue-mid); color: var(--blue); background: rgba(14,165,233,.07); }
+    .flow-arrow {
+      text-align: center; color: var(--border2); font-size: .85rem;
+      padding: .3rem 0; line-height: 1;
+    }
+    .flow-checks { display: flex; flex-direction: column; gap: .3rem; }
+    .flow-check {
+      display: flex; gap: .5rem; align-items: center;
+      font-size: .75rem; color: var(--text-muted);
+    }
+    .flow-check .ok { color: var(--green); font-weight: bold; }
+
+    /* ═══════════════════════════════════════════════════════
+       PRICING
+    ═══════════════════════════════════════════════════════ */
+    .pricing-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 1.25rem; }
+    .pr-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 16px; padding: 2rem;
+      display: flex; flex-direction: column;
+      transition: border-color .3s, transform .3s;
+      position: relative;
+    }
+    .pr-card:hover { transform: translateY(-4px); }
+    .pr-card.feat {
+      border-color: var(--blue-mid);
+      background: rgba(14,165,233,.05);
+    }
+    .pr-ribbon {
+      position: absolute; top: -13px; left: 50%; transform: translateX(-50%);
+      background: linear-gradient(135deg, var(--blue-mid), var(--cyan));
+      color: #fff; font-size: .68rem; font-weight: 700;
+      padding: .2rem .8rem; border-radius: 100px; white-space: nowrap;
+    }
+    .pr-tier {
+      font-size: .72rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .08em; color: var(--text-muted); margin-bottom: .5rem;
+    }
+    .pr-price {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 2.25rem; font-weight: 800; line-height: 1;
+    }
+    .pr-period { font-size: .78rem; color: var(--text-muted); margin-top: .2rem; margin-bottom: 1.5rem; }
+    .pr-div { border: none; border-top: 1px solid var(--border); margin: 1.25rem 0; }
+    .pr-feats { list-style: none; flex: 1; }
+    .pr-feat {
+      display: flex; align-items: flex-start; gap: .55rem;
+      font-size: .82rem; color: var(--text-dim); margin-bottom: .65rem;
+    }
+    .pr-feat::before { content: '✓'; color: var(--green); font-weight: 700; flex-shrink: 0; }
+    .pr-cta { margin-top: 1.75rem; }
+    .pr-cta .btn { width: 100%; justify-content: center; }
+
+    /* ═══════════════════════════════════════════════════════
+       CTA / WAITLIST
+    ═══════════════════════════════════════════════════════ */
+    .cta-section {
+      padding: 8rem 0; text-align: center; overflow: hidden;
+    }
+    .cta-glow {
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse 70% 60% at 50% 50%, rgba(14,165,233,.12) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .cta-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(2rem, 4vw, 3rem); font-weight: 800;
+      line-height: 1.1; letter-spacing: -.025em; margin-bottom: 1rem;
+    }
+    .cta-sub { font-size: 1.05rem; color: var(--text-dim); max-width: 480px; margin: 0 auto 2.5rem; }
+    .cta-form { display: flex; gap: .5rem; max-width: 420px; margin: 0 auto 1.5rem; }
+    .cta-input {
+      flex: 1; padding: .72rem 1rem;
+      background: var(--surface); border: 1px solid var(--border2);
+      border-radius: 8px; color: var(--text); font-size: .9rem;
+      font-family: 'Inter', sans-serif; outline: none; transition: border-color .2s;
+    }
+    .cta-input:focus { border-color: var(--blue-mid); }
+    .cta-input::placeholder { color: var(--text-muted); }
+    .cta-note { font-size: .75rem; color: var(--text-muted); }
+
+    /* ═══════════════════════════════════════════════════════
+       FOOTER
+    ═══════════════════════════════════════════════════════ */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 4rem 0 2rem;
+    }
+    .footer-top {
+      display: grid; grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 3rem; margin-bottom: 3rem;
+    }
+    .footer-desc { font-size: .83rem; color: var(--text-dim); margin-top: .75rem; max-width: 260px; line-height: 1.6; }
+    .footer-socials { display: flex; gap: .6rem; margin-top: 1.25rem; }
+    .social-link {
+      width: 32px; height: 32px; border-radius: 7px;
+      background: var(--surface2); border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: .85rem; color: var(--text-dim); transition: all .2s;
+    }
+    .social-link:hover { border-color: var(--border2); color: var(--text); }
+    .footer-col-title {
+      font-weight: 700; font-size: .78rem; text-transform: uppercase;
+      letter-spacing: .08em; color: var(--text); margin-bottom: 1rem;
+    }
+    .footer-links { list-style: none; display: flex; flex-direction: column; gap: .55rem; }
+    .footer-links a { font-size: .83rem; color: var(--text-dim); }
+    .footer-links a:hover { color: var(--text); }
+    .footer-bottom {
+      display: flex; justify-content: space-between; align-items: center;
+      padding-top: 2rem; border-top: 1px solid var(--border);
+    }
+    .footer-copy { font-size: .78rem; color: var(--text-muted); }
+    .footer-pills { display: flex; gap: .4rem; }
+    .fpill {
+      font-size: .68rem; font-weight: 600; padding: .18rem .6rem;
+      border-radius: 4px; border: 1px solid var(--border); color: var(--text-muted);
+    }
+
+    /* ── Scrollbar ──────────────────────────────────────── */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+
+    /* ═══════════════════════════════════════════════════════
+       RESPONSIVE
+    ═══════════════════════════════════════════════════════ */
+    @media (max-width: 900px) {
+      .hero-grid        { grid-template-columns: 1fr; gap: 2.5rem; }
+      .compare          { grid-template-columns: 1fr; }
+      .steps            { grid-template-columns: 1fr; }
+      .steps::after     { display: none; }
+      .policies-grid    { grid-template-columns: 1fr 1fr; }
+      .uc-grid          { grid-template-columns: 1fr 1fr; }
+      .demo-layout      { grid-template-columns: 1fr; }
+      .sec-layout       { grid-template-columns: 1fr; }
+      .pricing-grid     { grid-template-columns: 1fr 1fr; }
+      .footer-top       { grid-template-columns: 1fr 1fr; }
+      .stats-inner      { grid-template-columns: 1fr 1fr; }
+      .nav-links        { display: none; }
+    }
+    @media (max-width: 560px) {
+      .policies-grid    { grid-template-columns: 1fr; }
+      .uc-grid          { grid-template-columns: 1fr; }
+      .pricing-grid     { grid-template-columns: 1fr; }
+      .footer-top       { grid-template-columns: 1fr; }
+      .cta-form         { flex-direction: column; }
+      .chains-row       { gap: 1.25rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════
+     NAVBAR
+═══════════════════════════════════════════════════════════ -->
+<nav id="navbar">
+  <div class="nav-inner">
+    <a href="#" class="nav-logo">
+      <span class="logo-icon">🔑</span>
+      Delegacy
+    </a>
+    <ul class="nav-links">
+      <li><a href="#how-it-works">How It Works</a></li>
+      <li><a href="#policies">Policies</a></li>
+      <li><a href="#use-cases">Use Cases</a></li>
+      <li><a href="#pricing">Pricing</a></li>
+      <li><a href="docs/solana-architecture.html">Docs ↗</a></li>
+    </ul>
+    <div class="nav-right">
+      <a href="https://github.com" class="btn btn-ghost" target="_blank" rel="noopener">GitHub</a>
+      <a href="#waitlist" class="btn btn-primary">Get API Key →</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ═══════════════════════════════════════════════════════════
+     HERO
+═══════════════════════════════════════════════════════════ -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-grid">
+
+      <!-- LEFT: copy -->
+      <div>
+        <div class="hero-tag">
+          <div class="hero-tag-dot"></div>
+          Live on Mainnet &amp; Devnet
+        </div>
+        <h1 class="hero-title">
+          Sign Once.<br />
+          <span class="grad">Transact Forever.</span>
+        </h1>
+        <p class="hero-sub">
+          The first B2B infrastructure platform for session key wallets.
+          Your users' master key signs <em>once</em> — your app runs
+          frictionlessly for hours, backed by on-chain policy enforcement
+          across <strong>EVM</strong> and <strong>Solana</strong>.
+        </p>
+        <div class="hero-actions">
+          <a href="#waitlist" class="btn btn-primary btn-lg">Get API Key →</a>
+          <a href="docs/integration-guide.html" class="btn btn-ghost btn-lg">Read the Docs</a>
+        </div>
+        <div class="hero-trust">
+          <div class="hero-trust-dots">
+            <span>🎮</span><span>📈</span><span>🛒</span><span>🏢</span><span>🤖</span>
+          </div>
+          <span>Built for gaming, DeFi, commerce, enterprise &amp; IoT</span>
+        </div>
+      </div>
+
+      <!-- RIGHT: code window -->
+      <div>
+        <div class="code-win">
+          <div class="code-bar">
+            <div class="dot d-r"></div>
+            <div class="dot d-a"></div>
+            <div class="dot d-g"></div>
+            <span class="code-fname">game-session.ts</span>
+          </div>
+          <div class="code-body"><span class="cm">// 1. pnpm add @delegacy/sdk</span>
+<span class="kw">import</span> { <span class="typ">DelegacyClient</span>, <span class="fn">AllowlistPolicy</span>,
+         <span class="fn">SpendingLimitPolicy</span> } <span class="kw">from</span> <span class="str">'@delegacy/sdk'</span>;
+
+<span class="kw">const</span> client <span class="op">=</span> <span class="kw">new</span> <span class="fn">DelegacyClient</span>({ chainId: <span class="num">8453</span> });
+<span class="kw">const</span> account <span class="op">=</span> <span class="kw">await</span> client.<span class="fn">createAccount</span>({ owner: userWallet });
+
+<span class="cm">// 2. User signs ONCE — that's it</span>
+<span class="kw">const</span> session <span class="op">=</span> <span class="kw">await</span> client.<span class="fn">createSession</span>({
+  account,
+  ttlSeconds: <span class="num">8</span> <span class="op">*</span> <span class="num">60</span> <span class="op">*</span> <span class="num">60</span>, <span class="cm">// 8 hours</span>
+  policies: [
+    <span class="fn">AllowlistPolicy</span>({ rules: [{ target: GAME_CONTRACT }] }),
+    <span class="fn">SpendingLimitPolicy</span>({ maxAmount: <span class="num">5_000_000n</span> }),
+  ],
+});
+
+<span class="cm">// 3. Every action after ✨ NO popup, self-custodial</span>
+<span class="kw">await</span> client.<span class="fn">execute</span>({ session, target: GAME_CONTRACT, data });
+<span class="kw">await</span> client.<span class="fn">execute</span>({ session, target: GAME_CONTRACT, data });
+<span class="kw">await</span> client.<span class="fn">execute</span>({ session, target: GAME_CONTRACT, data });</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════
+     STATS BAR
+═══════════════════════════════════════════════════════════ -->
+<div class="stats-bar">
+  <div class="container">
+    <div class="stats-inner">
+      <div class="stat">
+        <span class="stat-val" data-target="65000">0</span>
+        <span class="stat-lbl">Solana TPS</span>
+      </div>
+      <div class="stat">
+        <span class="stat-val">&lt;$0.001</span>
+        <span class="stat-lbl">Per Transaction</span>
+      </div>
+      <div class="stat">
+        <span class="stat-val" data-target="8">0</span>
+        <span class="stat-lbl">Supported Networks</span>
+      </div>
+      <div class="stat">
+        <span class="stat-val" data-target="5">0</span>
+        <span class="stat-lbl">On-Chain Policies</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     PROBLEM / SOLUTION
+═══════════════════════════════════════════════════════════ -->
+<section class="section">
+  <div class="container">
+    <div class="section-hdr">
+      <div class="section-tag">The Problem</div>
+      <h2 class="section-title">Web3 UX is <span class="grad">broken</span>. We fix it.</h2>
+      <p class="section-sub">Every wallet popup is a lost transaction. Delegacy eliminates the friction without compromising custody.</p>
+    </div>
+    <div class="compare">
+      <div class="cmp-card bad">
+        <div class="cmp-head">
+          <span>❌</span> Without Delegacy
+        </div>
+        <div class="cmp-row"><span class="ci">🚨</span><span>Wallet popup on <em>every single</em> transaction — users abandon your app</span></div>
+        <div class="cmp-row"><span class="ci">🔓</span><span>To automate, devs store private keys server-side — catastrophic if breached</span></div>
+        <div class="cmp-row"><span class="ci">⛽</span><span>Users confused by gas fees, networks, and raw transaction hex</span></div>
+        <div class="cmp-row"><span class="ci">⏱️</span><span>Mobile UX is broken — every action requires a wallet app context switch</span></div>
+        <div class="cmp-row"><span class="ci">🤖</span><span>No bots, no automation, no subscriptions — they all require custody of keys</span></div>
+      </div>
+      <div class="cmp-card good">
+        <div class="cmp-head">
+          <span>✅</span> With Delegacy
+        </div>
+        <div class="cmp-row"><span class="ci">🎯</span><span>User signs once — plays, trades, shops for hours without seeing a popup</span></div>
+        <div class="cmp-row"><span class="ci">🔒</span><span>Session keys are scoped, time-limited, and can't exceed on-chain policy limits</span></div>
+        <div class="cmp-row"><span class="ci">💸</span><span>Developer sponsors gas — user experience is completely fee-transparent</span></div>
+        <div class="cmp-row"><span class="ci">📱</span><span>Smooth native-app feel in-browser or on mobile, all self-custodial</span></div>
+        <div class="cmp-row"><span class="ci">⚡</span><span>Bots and automation run within hard guardrails enforced at the VM level</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════
+     HOW IT WORKS
+═══════════════════════════════════════════════════════════ -->
+<section class="section" id="how-it-works" style="padding-top:0">
+  <div class="container">
+    <div class="section-hdr">
+      <div class="section-tag">Integration</div>
+      <h2 class="section-title">From <span class="grad">npm install</span> to session keys in 5 minutes</h2>
+      <p class="section-sub">Delegacy is an SDK + API service. No smart contract deployments, no infra to manage.</p>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-title">Install the SDK</div>
+        <p class="step-body">
+          <code style="font-family:'JetBrains Mono',monospace;color:var(--cyan);font-size:.85em">pnpm add @delegacy/sdk</code><br /><br />
+          Works with any TypeScript or JavaScript app. EVM and Solana packages are separate by choice — only import what you use.
+        </p>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-title">Define Your Policies</div>
+        <p class="step-body">
+          Mix and match 5 on-chain policy types: spending limits, program/contract allowlists, rate limits, compute budgets, and time bounds. All enforced at the VM level — not by a server you trust.
+        </p>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-title">Ship Frictionless UX</div>
+        <p class="step-body">
+          User's master key signs once to register the session. Your app calls <code style="font-family:'JetBrains Mono',monospace;color:var(--cyan);font-size:.85em">execute()</code> as many times as needed — the session key handles all subsequent signing behind the scenes.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════
+     CHAIN SUPPORT
+═══════════════════════════════════════════════════════════ -->
+<div class="chains-strip">
+  <div class="container">
+    <div class="chains-label">Supported Networks</div>
+    <div class="chains-row">
+      <div class="chain-item">
+        <div class="chain-icon">⟠</div>
+        <div class="chain-lbl">Ethereum</div>
+      </div>
+      <div class="chain-item">
+        <div class="chain-icon">🔵</div>
+        <div class="chain-lbl">Base</div>
+      </div>
+      <div class="chain-item">
+        <div class="chain-icon">🟣</div>
+        <div class="chain-lbl">Polygon</div>
+      </div>
+      <div class="chain-item">
+        <div class="chain-icon">🔵</div>
+        <div class="chain-lbl">Arbitrum</div>
+      </div>
+      <div class="chain-item">
+        <div class="chain-icon">🔴</div>
+        <div class="chain-lbl">Optimism</div>
+      </div>
+      <div class="chain-item" style="opacity:1">
+        <div class="chain-icon" style="border-color:rgba(167,139,250,.5);background:rgba(167,139,250,.08)">◎</div>
+        <div class="chain-lbl" style="color:var(--purple)">Solana</div>
+        <div class="chain-badge">New</div>
+      </div>
+      <div class="chain-item">
+        <div class="chain-icon">🟡</div>
+        <div class="chain-lbl">Sepolia</div>
+      </div>
+      <div class="chain-item">
+        <div class="chain-icon">🌐</div>
+        <div class="chain-lbl">Devnet</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     POLICIES
+═══════════════════════════════════════════════════════════ -->
+<section class="section" id="policies">
+  <div class="container">
+    <div class="section-hdr">
+      <div class="section-tag">On-Chain Policies</div>
+      <h2 class="section-title">Guardrails that <span class="grad">can't be bypassed</span></h2>
+      <p class="section-sub">Every policy is enforced at the VM layer — not by a server, not by the SDK. Even a compromised session key can't exceed these limits.</p>
+    </div>
+    <div class="policies-grid">
+      <div class="pol-card">
+        <div class="pol-icon">💰</div>
+        <div class="pol-name">Spending Limit</div>
+        <div class="pol-desc">Cap the total token value a session key can spend. Resets per session. Supports native ETH/SOL and any ERC-20 / SPL token.</div>
+        <div style="display:flex;gap:.4rem;flex-wrap:wrap">
+          <span class="pol-badge evm">EVM</span>
+          <span class="pol-badge sol">Solana</span>
+        </div>
+        <div class="pol-code"><span class="fn">SpendingLimitPolicy</span>({
+  maxAmount: <span class="num">5_000_000n</span>, <span style="color:#3d5873;font-style:italic">// 5 USDC</span>
+  token: <span class="str">USDC_ADDRESS</span>
+})</div>
+      </div>
+
+      <div class="pol-card">
+        <div class="pol-icon">📋</div>
+        <div class="pol-name">Allowlist Policy</div>
+        <div class="pol-desc">Restrict which contracts (EVM) or programs (Solana) the session key can call. Optionally lock to specific function selectors on EVM.</div>
+        <div style="display:flex;gap:.4rem;flex-wrap:wrap">
+          <span class="pol-badge evm">EVM</span>
+          <span class="pol-badge sol">Solana</span>
+        </div>
+        <div class="pol-code"><span class="fn">AllowlistPolicy</span>({
+  rules: [{ target: <span class="str">GAME</span>,
+            selector: <span class="str">'0x...'</span> }]
+})</div>
+      </div>
+
+      <div class="pol-card">
+        <div class="pol-icon">⏱️</div>
+        <div class="pol-name">Rate Limit</div>
+        <div class="pol-desc">Limit operations per time window. Prevents runaway bots while allowing legitimate fast-paced use cases like gaming at 120 ops/min.</div>
+        <div style="display:flex;gap:.4rem;flex-wrap:wrap">
+          <span class="pol-badge evm">EVM</span>
+          <span class="pol-badge sol">Solana</span>
+        </div>
+        <div class="pol-code"><span class="fn">RateLimitPolicy</span>({
+  maxOps: <span class="num">120</span>,
+  windowSeconds: <span class="num">60</span>
+})</div>
+      </div>
+
+      <div class="pol-card">
+        <div class="pol-icon">⛽</div>
+        <div class="pol-name">Gas / Compute Limit</div>
+        <div class="pol-desc">Cap total gas units (EVM) or compute units (Solana) the session can consume. Prevents unintended heavy computation or gas drain attacks.</div>
+        <div style="display:flex;gap:.4rem;flex-wrap:wrap">
+          <span class="pol-badge evm">EVM</span>
+          <span class="pol-badge sol">Solana</span>
+        </div>
+        <div class="pol-code"><span class="fn">ComputeLimitPolicy</span>({
+  maxComputeUnits: <span class="num">50_000_000n</span>
+})  <span style="color:#3d5873;font-style:italic">// 50M CUs</span></div>
+      </div>
+
+      <div class="pol-card">
+        <div class="pol-icon">🕐</div>
+        <div class="pol-name">Time Bound</div>
+        <div class="pol-desc">Every session has a valid window — a start time and expiry — enforced at the block timestamp level. No off-chain timers, no trust required.</div>
+        <div style="display:flex;gap:.4rem;flex-wrap:wrap">
+          <span class="pol-badge evm">EVM</span>
+          <span class="pol-badge sol">Solana</span>
+        </div>
+        <div class="pol-code">ttlSeconds: <span class="num">8</span> <span style="color:#94a3b8">*</span> <span class="num">60</span> <span style="color:#94a3b8">*</span> <span class="num">60</span>
+<span style="color:#3d5873;font-style:italic">// validAfter + validUntil
+// set on-chain, immutable</span></div>
+      </div>
+
+      <div class="pol-card" style="border-style:dashed;background:rgba(14,165,233,.02)">
+        <div class="pol-icon">🔧</div>
+        <div class="pol-name">Custom Policies</div>
+        <div class="pol-desc">Need something bespoke? Implement the <code style="font-family:'JetBrains Mono',monospace;font-size:.85em">IPolicy</code> interface (EVM) or a Solana PDA policy account. Enterprise plans include custom policy development.</div>
+        <div style="display:flex;gap:.4rem;flex-wrap:wrap">
+          <span class="pol-badge evm">EVM</span>
+          <span class="pol-badge sol">Solana</span>
+        </div>
+        <div class="pol-code" style="color:var(--blue);border-color:rgba(14,165,233,.2)">→ <a href="docs/architecture.html" style="color:var(--blue)">See custom policy guide ↗</a></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════
+     USE CASES
+═══════════════════════════════════════════════════════════ -->
+<section class="section" id="use-cases" style="padding-top:0">
+  <div class="container">
+    <div class="section-hdr">
+      <div class="section-tag">Market Verticals</div>
+      <h2 class="section-title">Every app that touches <span class="grad">digital assets</span> is a customer</h2>
+      <p class="section-sub">Delegacy is horizontal infrastructure — the session key layer for every Web3 vertical.</p>
+    </div>
+    <div class="uc-grid">
+
+      <div class="uc-card">
+        <div class="uc-emoji">🎮</div>
+        <div class="uc-title">Gaming</div>
+        <div class="uc-market">$3.2B market · Highest Priority</div>
+        <div class="uc-desc">Player signs at game launch, plays for hours without popups. Studio sponsors gas. NFT trades, in-game purchases, and crafting — all instant.</div>
+        <div class="uc-tags">
+          <span class="uc-tag">Allowlist</span>
+          <span class="uc-tag">120 ops/min</span>
+          <span class="uc-tag">8h sessions</span>
+        </div>
+      </div>
+
+      <div class="uc-card">
+        <div class="uc-emoji">📈</div>
+        <div class="uc-title">DeFi Automation</div>
+        <div class="uc-market">$50B+ TVL across protocols</div>
+        <div class="uc-desc">Users run trading bots and yield strategies within a strict spending limit. Bot can't exceed on-chain guardrails — even if compromised.</div>
+        <div class="uc-tags">
+          <span class="uc-tag">Spending Limit</span>
+          <span class="uc-tag">Rate Limit</span>
+          <span class="uc-tag">4h windows</span>
+        </div>
+      </div>
+
+      <div class="uc-card">
+        <div class="uc-emoji">🛒</div>
+        <div class="uc-title">Commerce &amp; Subscriptions</div>
+        <div class="uc-market">$1.2T subscription economy</div>
+        <div class="uc-desc">One-click crypto checkouts and recurring USDC subscriptions — the "save card" model for Web3, fully self-custodial.</div>
+        <div class="uc-tags">
+          <span class="uc-tag">1 charge/month</span>
+          <span class="uc-tag">USDC</span>
+          <span class="uc-tag">Solana Pay</span>
+        </div>
+      </div>
+
+      <div class="uc-card">
+        <div class="uc-emoji">🏢</div>
+        <div class="uc-title">Enterprise &amp; Treasury</div>
+        <div class="uc-market">$250B+ corporate crypto</div>
+        <div class="uc-desc">CFO holds Ledger. Employees get role-scoped session keys with hard spending limits. Full on-chain audit trail, one-click emergency revoke.</div>
+        <div class="uc-tags">
+          <span class="uc-tag">Role-based</span>
+          <span class="uc-tag">Audit Trail</span>
+          <span class="uc-tag">Instant Revoke</span>
+        </div>
+      </div>
+
+      <div class="uc-card">
+        <div class="uc-emoji">💬</div>
+        <div class="uc-title">Social &amp; Creator Economy</div>
+        <div class="uc-market">$250B creator economy</div>
+        <div class="uc-desc">Browse and tip with a $10 daily budget. Every like, boost, collect, and tip is instant — no popup interrupting the scroll.</div>
+        <div class="uc-tags">
+          <span class="uc-tag">Micro-tips</span>
+          <span class="uc-tag">200 ops/hr</span>
+          <span class="uc-tag">cNFTs</span>
+        </div>
+      </div>
+
+      <div class="uc-card">
+        <div class="uc-emoji">🤖</div>
+        <div class="uc-title">IoT &amp; Machine Economy</div>
+        <div class="uc-market">$1.1T IoT market by 2028</div>
+        <div class="uc-desc">Fleet manager provisions daily session keys for vehicles. Devices pay tolls, EV charging, and submit telemetry autonomously within hard budgets.</div>
+        <div class="uc-tags">
+          <span class="uc-tag">24h rotation</span>
+          <span class="uc-tag">50 SOL/day limit</span>
+          <span class="uc-tag">DePIN</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════
+     CODE DEMO
+═══════════════════════════════════════════════════════════ -->
+<section class="section" style="padding-top:0">
+  <div class="container">
+    <div class="demo-layout">
+
+      <div class="demo-copy">
+        <div class="section-tag">SDK Demo</div>
+        <h2>Same API.<br /><span class="grad">Two Chains.</span></h2>
+        <p>The EVM and Solana SDKs share the same mental model — install, define policies, execute. No need to learn two completely different paradigms.</p>
+        <div class="demo-feature">
+          <span class="check">✓</span>
+          <span>Full TypeScript types on every call</span>
+        </div>
+        <div class="demo-feature">
+          <span class="check">✓</span>
+          <span>Session serialization for client persistence across page reloads</span>
+        </div>
+        <div class="demo-feature">
+          <span class="check">✓</span>
+          <span>REST API fallback if you prefer HTTP over the SDK</span>
+        </div>
+        <div class="demo-feature">
+          <span class="check">✓</span>
+          <span>Works in browser, Node.js, and edge runtimes</span>
+        </div>
+        <div style="margin-top:1.5rem;display:flex;gap:.75rem">
+          <a href="docs/integration-guide.html" class="btn btn-outline">EVM Docs ↗</a>
+          <a href="docs/solana-integration-guide.html" class="btn btn-outline" style="border-color:var(--purple);color:var(--purple)">Solana Docs ↗</a>
+        </div>
+      </div>
+
+      <div data-tabs>
+        <div class="tabs-bar">
+          <button class="tab active" data-tab="evm">EVM (TypeScript)</button>
+          <button class="tab" data-tab="solana">Solana (TypeScript)</button>
+          <button class="tab" data-tab="rest">REST API</button>
+        </div>
+
+        <div class="tab-panel active" data-panel="evm">
+          <div class="code-win">
+            <div class="code-bar">
+              <div class="dot d-r"></div><div class="dot d-a"></div><div class="dot d-g"></div>
+              <span class="code-fname">evm-session.ts</span>
+            </div>
+            <div class="code-body"><span class="kw">import</span> { <span class="typ">DelegacyClient</span>, <span class="fn">AllowlistPolicy</span>,
+         <span class="fn">RateLimitPolicy</span>, <span class="fn">SpendingLimitPolicy</span> }
+  <span class="kw">from</span> <span class="str">'@delegacy/sdk'</span>;
+
+<span class="kw">const</span> client = <span class="kw">new</span> <span class="fn">DelegacyClient</span>({
+  chainId:    <span class="num">8453</span>,  <span class="cm">// Base mainnet</span>
+  rpcUrl:     <span class="str">'https://mainnet.base.org'</span>,
+  bundlerUrl: <span class="str">'https://bundler.delegacy.io/base'</span>,
+});
+
+<span class="kw">const</span> account = <span class="kw">await</span> client.<span class="fn">createAccount</span>({ owner: userWallet });
+
+<span class="kw">const</span> session = <span class="kw">await</span> client.<span class="fn">createSession</span>({
+  account,  label: <span class="str">'DeFi Bot Session'</span>,
+  ttlSeconds: <span class="num">4</span> <span class="op">*</span> <span class="num">60</span> <span class="op">*</span> <span class="num">60</span>,
+  policies: [
+    <span class="fn">AllowlistPolicy</span>({ rules: [
+      { target: UNISWAP_ROUTER, selector: <span class="str">'0x...'</span> },
+    ]}),
+    <span class="fn">SpendingLimitPolicy</span>({ maxAmount: <span class="num">500_000_000n</span> }),
+    <span class="fn">RateLimitPolicy</span>({ maxOps: <span class="num">20</span>, windowSeconds: <span class="num">3600</span> }),
+  ],
+});
+
+<span class="cm">// No more wallet popups from here</span>
+<span class="kw">const</span> receipt = <span class="kw">await</span> client.<span class="fn">execute</span>({
+  session, target: UNISWAP_ROUTER, data: swapCalldata,
+});
+console.<span class="fn">log</span>(<span class="str">'Tx:'</span>, receipt.transactionHash);</div>
+          </div>
+        </div>
+
+        <div class="tab-panel" data-panel="solana">
+          <div class="code-win">
+            <div class="code-bar">
+              <div class="dot d-r"></div><div class="dot d-a"></div><div class="dot d-g"></div>
+              <span class="code-fname">solana-session.ts</span>
+            </div>
+            <div class="code-body"><span class="kw">import</span> { <span class="typ">SolanaDelegacyClient</span>, <span class="fn">AllowlistPolicy</span>,
+         <span class="fn">SpendingLimitPolicy</span>, <span class="fn">ComputeLimitPolicy</span> }
+  <span class="kw">from</span> <span class="str">'@delegacy/solana-sdk'</span>;
+<span class="kw">import</span> { <span class="typ">Keypair</span> } <span class="kw">from</span> <span class="str">'@solana/web3.js'</span>;
+
+<span class="kw">const</span> client = <span class="kw">new</span> <span class="fn">SolanaDelegacyClient</span>({
+  cluster: <span class="str">'mainnet-beta'</span>,
+  rpcUrl:  <span class="str">'https://api.mainnet-beta.solana.com'</span>,
+});
+
+<span class="kw">const</span> guard = <span class="kw">await</span> client.<span class="fn">initializeAccount</span>(ownerKeypair);
+
+<span class="kw">const</span> session = <span class="kw">await</span> client.<span class="fn">createSession</span>({
+  owner: ownerKeypair, guardAccount: guard,
+  label: <span class="str">'Gaming Session'</span>, ttlSeconds: <span class="num">8</span> <span class="op">*</span> <span class="num">60</span> <span class="op">*</span> <span class="num">60</span>,
+  policies: [
+    <span class="fn">AllowlistPolicy</span>({ allowedPrograms: [GAME_PROGRAM] }),
+    <span class="fn">SpendingLimitPolicy</span>({ maxAmount: <span class="num">5_000_000_000n</span> }),
+    <span class="fn">ComputeLimitPolicy</span>({ maxComputeUnits: <span class="num">50_000_000n</span> }),
+  ],
+});
+
+<span class="cm">// Ed25519 session key signs — owner never prompted again</span>
+<span class="kw">const</span> result = <span class="kw">await</span> client.<span class="fn">execute</span>({
+  session, targetProgram: GAME_PROGRAM,
+  instructionData: Buffer.<span class="fn">from</span>([<span class="num">0x01</span>, ...payload]),
+});
+console.<span class="fn">log</span>(<span class="str">'Sig:'</span>, result.signature);</div>
+          </div>
+        </div>
+
+        <div class="tab-panel" data-panel="rest">
+          <div class="code-win">
+            <div class="code-bar">
+              <div class="dot d-r"></div><div class="dot d-a"></div><div class="dot d-g"></div>
+              <span class="code-fname">REST API</span>
+            </div>
+            <div class="code-body"><span class="cm"># Create a session via REST (no SDK required)</span>
+<span class="fn">POST</span> /api/v1/sessions
+<span class="kw">Authorization</span>: Bearer sg_live_xxx
+<span class="kw">Content-Type</span>: application/json
+
+{
+  <span class="str">"account"</span>:     <span class="str">"0x..."</span>,
+  <span class="str">"chainId"</span>:     <span class="num">8453</span>,
+  <span class="str">"ttlSeconds"</span>:  <span class="num">86400</span>,
+  <span class="str">"label"</span>:       <span class="str">"Game Session"</span>,
+  <span class="str">"policies"</span>: [
+    { <span class="str">"type"</span>: <span class="str">"spending-limit"</span>, <span class="str">"maxAmount"</span>: <span class="str">"5000000"</span> },
+    { <span class="str">"type"</span>: <span class="str">"allowlist"</span>, <span class="str">"rules"</span>: [
+        { <span class="str">"target"</span>: <span class="str">"0x..."</span>, <span class="str">"selector"</span>: <span class="str">"0x..."</span> }
+    ]}
+  ]
+}
+
+<span class="cm"># Solana endpoint</span>
+<span class="fn">POST</span> /api/v1/solana/sessions
+<span class="cm"># Same pattern — just different chain context</span>
+
+<span class="cm"># Revoke instantly</span>
+<span class="fn">DELETE</span> /api/v1/sessions/<span class="str">:account</span>/<span class="str">:sessionKey</span></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════
+     SECURITY MODEL
+═══════════════════════════════════════════════════════════ -->
+<section class="section" style="padding-top:0">
+  <div class="container">
+    <div class="section-hdr">
+      <div class="section-tag">Security</div>
+      <h2 class="section-title">Trustless by design. <span class="grad">Verified on-chain.</span></h2>
+      <p class="section-sub">Every security guarantee is enforced at the VM layer. Nothing relies on trusting Delegacy's servers.</p>
+    </div>
+    <div class="sec-layout">
+      <ul class="sec-list">
+        <li class="sec-item">
+          <div class="sec-ico">🔐</div>
+          <div>
+            <div class="sec-head">On-Chain Policy Enforcement</div>
+            <div class="sec-body">Spending limits, allowlists, and rate limits are stored and checked in Solidity or Anchor. No server can override them.</div>
+          </div>
+        </li>
+        <li class="sec-item">
+          <div class="sec-ico">🗝️</div>
+          <div>
+            <div class="sec-head">Master Key Isolation</div>
+            <div class="sec-body">The user's master key signs exactly once to register a session. It never touches your server, ever.</div>
+          </div>
+        </li>
+        <li class="sec-item">
+          <div class="sec-ico">⏰</div>
+          <div>
+            <div class="sec-head">Block-Level Time Bounds</div>
+            <div class="sec-body">Sessions expire at the block timestamp — not a backend timer. An expired session key becomes cryptographically useless.</div>
+          </div>
+        </li>
+        <li class="sec-item">
+          <div class="sec-ico">🚫</div>
+          <div>
+            <div class="sec-head">Instant Revocation</div>
+            <div class="sec-body">Any session can be revoked in a single transaction. Effective immediately — no waiting for TTL to expire.</div>
+          </div>
+        </li>
+        <li class="sec-item">
+          <div class="sec-ico">🛡️</div>
+          <div>
+            <div class="sec-head">Replay Protection</div>
+            <div class="sec-body">ERC-4337 EntryPoint nonces on EVM, native recent-blockhash on Solana. Replayed transactions are rejected at consensus.</div>
+          </div>
+        </li>
+      </ul>
+
+      <!-- Flow diagram -->
+      <div class="flow-box">
+        <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;margin-bottom:1.25rem;font-size:.95rem">Execution Flow</div>
+        <div class="flow-layer" style="margin-bottom:.25rem">
+          🖥️ &nbsp;<strong>Your Application</strong>
+          <span style="float:right;font-size:.7rem;color:var(--text-muted)">calls execute()</span>
+        </div>
+        <div class="flow-arrow">↓</div>
+        <div class="flow-layer hl" style="margin-bottom:.25rem">
+          🔑 &nbsp;<strong>Session Key Signs</strong>
+          <span style="float:right;font-size:.7rem;color:var(--blue-mid)">not master key</span>
+        </div>
+        <div class="flow-arrow">↓</div>
+        <div class="flow-layer" style="margin-bottom:.75rem">
+          ⛓️ &nbsp;<strong>On-Chain Validation</strong>
+        </div>
+        <div class="flow-checks" style="margin-left:1.25rem;margin-bottom:.75rem">
+          <div class="flow-check"><span class="ok">✓</span> Time bounds check (block.timestamp)</div>
+          <div class="flow-check"><span class="ok">✓</span> Revoked flag check</div>
+          <div class="flow-check"><span class="ok">✓</span> Allowlist policy</div>
+          <div class="flow-check"><span class="ok">✓</span> Spending limit policy</div>
+          <div class="flow-check"><span class="ok">✓</span> Rate limit policy</div>
+        </div>
+        <div class="flow-arrow">↓ <span style="font-size:.72rem;color:var(--green)">all pass</span></div>
+        <div class="flow-layer" style="margin-top:.25rem;border-color:rgba(52,211,153,.3);background:rgba(52,211,153,.05)">
+          🎯 &nbsp;<strong>Target Contract / Program</strong>
+          <span style="float:right;font-size:.7rem;color:var(--green)">executed ✓</span>
+        </div>
+        <div style="margin-top:1rem;font-size:.73rem;color:var(--text-muted);text-align:center">
+          No server involved after session registration
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════
+     PRICING
+═══════════════════════════════════════════════════════════ -->
+<section class="section" id="pricing">
+  <div class="container">
+    <div class="section-hdr">
+      <div class="section-tag">Pricing</div>
+      <h2 class="section-title">Start free. <span class="grad">Scale as you grow.</span></h2>
+      <p class="section-sub">All plans include SDK access, API keys, and both EVM and Solana support.</p>
+    </div>
+    <div class="pricing-grid">
+
+      <div class="pr-card">
+        <div class="pr-tier">Free</div>
+        <div class="pr-price">$0</div>
+        <div class="pr-period">forever · no card required</div>
+        <hr class="pr-div" />
+        <ul class="pr-feats">
+          <li class="pr-feat">1,000 transactions / month</li>
+          <li class="pr-feat">Devnet &amp; Testnets only</li>
+          <li class="pr-feat">SDK + REST API access</li>
+          <li class="pr-feat">Both EVM and Solana SDKs</li>
+          <li class="pr-feat">Community Discord support</li>
+        </ul>
+        <div class="pr-cta">
+          <a href="#waitlist" class="btn btn-ghost" style="font-size:.85rem">Get started free →</a>
+        </div>
+      </div>
+
+      <div class="pr-card feat">
+        <div class="pr-ribbon">Most Popular</div>
+        <div class="pr-tier">Growth</div>
+        <div class="pr-price grad">$99</div>
+        <div class="pr-period">per month</div>
+        <hr class="pr-div" />
+        <ul class="pr-feats">
+          <li class="pr-feat">50,000 transactions / month</li>
+          <li class="pr-feat">All chains + Solana mainnet</li>
+          <li class="pr-feat">SDK + REST API access</li>
+          <li class="pr-feat">Email support (48h SLA)</li>
+          <li class="pr-feat">Basic analytics dashboard</li>
+          <li class="pr-feat">Paymaster / fee sponsorship</li>
+        </ul>
+        <div class="pr-cta">
+          <a href="#waitlist" class="btn btn-primary" style="font-size:.85rem">Start Growth →</a>
+        </div>
+      </div>
+
+      <div class="pr-card">
+        <div class="pr-tier">Scale</div>
+        <div class="pr-price">$499</div>
+        <div class="pr-period">per month</div>
+        <hr class="pr-div" />
+        <ul class="pr-feats">
+          <li class="pr-feat">500,000 transactions / month</li>
+          <li class="pr-feat">All chains + Solana mainnet</li>
+          <li class="pr-feat">Priority support (12h SLA)</li>
+          <li class="pr-feat">Full analytics + spending reports</li>
+          <li class="pr-feat">Custom policy development</li>
+          <li class="pr-feat">Dedicated RPC endpoints</li>
+        </ul>
+        <div class="pr-cta">
+          <a href="#waitlist" class="btn btn-outline" style="font-size:.85rem">Start Scale →</a>
+        </div>
+      </div>
+
+      <div class="pr-card">
+        <div class="pr-tier">Enterprise</div>
+        <div class="pr-price" style="font-size:1.6rem;display:flex;align-items:center;gap:.4rem">Custom</div>
+        <div class="pr-period">contact us</div>
+        <hr class="pr-div" />
+        <ul class="pr-feats">
+          <li class="pr-feat">Unlimited transactions</li>
+          <li class="pr-feat">SLA + dedicated support</li>
+          <li class="pr-feat">On-premise deployment option</li>
+          <li class="pr-feat">SSO + team management</li>
+          <li class="pr-feat">Audit &amp; compliance reports</li>
+          <li class="pr-feat">Custom contract audits</li>
+        </ul>
+        <div class="pr-cta">
+          <a href="mailto:enterprise@delegacy.io" class="btn btn-ghost" style="font-size:.85rem">Contact Sales →</a>
+        </div>
+      </div>
+
+    </div>
+    <p style="text-align:center;margin-top:1.5rem;font-size:.8rem;color:var(--text-muted)">
+      Additional usage billed at $0.002 per transaction · Paymaster fee: 1% of sponsored gas/fees
+    </p>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════
+     CTA / WAITLIST
+═══════════════════════════════════════════════════════════ -->
+<section class="cta-section" id="waitlist">
+  <div class="cta-glow"></div>
+  <div class="container" style="position:relative">
+    <div class="hero-tag" style="justify-content:center;margin-bottom:1.5rem">
+      <div class="hero-tag-dot"></div>
+      Early Access · Limited Spots
+    </div>
+    <h2 class="cta-title">
+      Ready to give your users<br />
+      <span class="grad">seamless Web3 UX?</span>
+    </h2>
+    <p class="cta-sub">Join the waitlist for early API access. We're onboarding developers starting Q2 2026.</p>
+    <form class="cta-form" onsubmit="handleSignup(event)">
+      <input class="cta-input" type="email" placeholder="you@yourapp.com" required id="email-input" />
+      <button type="submit" class="btn btn-primary">Get Access →</button>
+    </form>
+    <p class="cta-note" id="cta-msg">No spam. We'll reach out when your API key is ready.</p>
+    <div style="margin-top:2.5rem;display:flex;justify-content:center;gap:2rem;flex-wrap:wrap">
+      <div style="display:flex;align-items:center;gap:.5rem;font-size:.82rem;color:var(--text-muted)">
+        <span style="color:var(--green)">✓</span> Free tier available
+      </div>
+      <div style="display:flex;align-items:center;gap:.5rem;font-size:.82rem;color:var(--text-muted)">
+        <span style="color:var(--green)">✓</span> No credit card required
+      </div>
+      <div style="display:flex;align-items:center;gap:.5rem;font-size:.82rem;color:var(--text-muted)">
+        <span style="color:var(--green)">✓</span> Works on EVM + Solana
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════
+     FOOTER
+═══════════════════════════════════════════════════════════ -->
+<footer>
+  <div class="container">
+    <div class="footer-top">
+      <div>
+        <a href="#" class="nav-logo" style="font-size:1.1rem">
+          <span class="logo-icon">🔑</span> Delegacy
+        </a>
+        <p class="footer-desc">
+          Session key wallet infrastructure for Web3. Build frictionless apps without compromising user custody.
+        </p>
+        <div class="footer-socials">
+          <a class="social-link" href="#" title="Twitter">𝕏</a>
+          <a class="social-link" href="#" title="GitHub">⌥</a>
+          <a class="social-link" href="#" title="Discord">◈</a>
+          <a class="social-link" href="#" title="Telegram">✈</a>
+        </div>
+      </div>
+
+      <div>
+        <div class="footer-col-title">Product</div>
+        <ul class="footer-links">
+          <li><a href="#how-it-works">How It Works</a></li>
+          <li><a href="#policies">Policies</a></li>
+          <li><a href="#use-cases">Use Cases</a></li>
+          <li><a href="#pricing">Pricing</a></li>
+          <li><a href="#waitlist">Early Access</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <div class="footer-col-title">Docs</div>
+        <ul class="footer-links">
+          <li><a href="docs/architecture.html">EVM Architecture</a></li>
+          <li><a href="docs/integration-guide.html">EVM Integration</a></li>
+          <li><a href="docs/use-cases.html">EVM Use Cases</a></li>
+          <li><a href="docs/solana-architecture.html">Solana Architecture</a></li>
+          <li><a href="docs/solana-integration-guide.html">Solana Integration</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <div class="footer-col-title">Company</div>
+        <ul class="footer-links">
+          <li><a href="#">About</a></li>
+          <li><a href="#">Blog</a></li>
+          <li><a href="#">Security</a></li>
+          <li><a href="mailto:enterprise@delegacy.io">Contact</a></li>
+          <li><a href="#">Privacy Policy</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <span class="footer-copy">© 2026 Delegacy. All rights reserved.</span>
+      <div class="footer-pills">
+        <span class="fpill">EVM</span>
+        <span class="fpill">ERC-4337</span>
+        <span class="fpill">Solana</span>
+        <span class="fpill">Anchor</span>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- ═══════════════════════════════════════════════════════════
+     JAVASCRIPT
+═══════════════════════════════════════════════════════════ -->
+<script>
+  /* ── Tab switching ──────────────────────────────────────── */
+  document.querySelectorAll('[data-tabs]').forEach(function(group) {
+    group.querySelectorAll('.tab').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        group.querySelectorAll('.tab').forEach(function(b) { b.classList.remove('active'); });
+        group.querySelectorAll('.tab-panel').forEach(function(p) { p.classList.remove('active'); });
+        btn.classList.add('active');
+        group.querySelector('[data-panel="' + btn.dataset.tab + '"]').classList.add('active');
+      });
+    });
+  });
+
+  /* ── Animated number counters ───────────────────────────── */
+  function animateCount(el) {
+    var target  = parseInt(el.dataset.target, 10);
+    var start   = performance.now();
+    var dur     = 1400;
+    function tick(now) {
+      var t = Math.min((now - start) / dur, 1);
+      var ease = 1 - Math.pow(1 - t, 3);
+      var val  = Math.round(ease * target);
+      el.textContent = val >= 1000 ? val.toLocaleString() : val;
+      if (t < 1) requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  }
+  var countObs = new IntersectionObserver(function(entries) {
+    entries.forEach(function(e) {
+      if (e.isIntersecting) { animateCount(e.target); countObs.unobserve(e.target); }
+    });
+  }, { threshold: 0.5 });
+  document.querySelectorAll('[data-target]').forEach(function(el) { countObs.observe(el); });
+
+  /* ── Navbar scroll shadow ───────────────────────────────── */
+  var navbar = document.getElementById('navbar');
+  window.addEventListener('scroll', function() {
+    if (window.scrollY > 40) {
+      navbar.style.boxShadow = '0 4px 32px rgba(0,0,0,.5)';
+    } else {
+      navbar.style.boxShadow = 'none';
+    }
+  }, { passive: true });
+
+  /* ── CTA form ───────────────────────────────────────────── */
+  function handleSignup(e) {
+    e.preventDefault();
+    var email = document.getElementById('email-input').value;
+    var msg   = document.getElementById('cta-msg');
+    if (email) {
+      msg.textContent = '🎉 You\'re on the list! We\'ll be in touch soon.';
+      msg.style.color = '#34d399';
+      document.getElementById('email-input').value = '';
+    }
+  }
+
+  /* ── Entrance animations (subtle fade-up) ───────────────── */
+  var style = document.createElement('style');
+  style.textContent = '.fade-up{opacity:0;transform:translateY(24px);transition:opacity .6s ease,transform .6s ease;}.fade-up.in{opacity:1;transform:none;}';
+  document.head.appendChild(style);
+
+  var animEls = document.querySelectorAll('.step, .uc-card, .pol-card, .pr-card, .cmp-card, .sec-item');
+  animEls.forEach(function(el) { el.classList.add('fade-up'); });
+
+  var animObs = new IntersectionObserver(function(entries) {
+    entries.forEach(function(e, i) {
+      if (e.isIntersecting) {
+        setTimeout(function() { e.target.classList.add('in'); }, 0);
+        animObs.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+  animEls.forEach(function(el) { animObs.observe(el); });
+</script>
+</body>
+</html>

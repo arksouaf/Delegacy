@@ -1,0 +1,12 @@
+[workspace]
+members = ["programs/*"]
+
+[provider]
+cluster = "devnet"
+wallet = "~/.config/solana/id.json"
+
+[programs.devnet]
+session_guard = "SGrd1111111111111111111111111111111111111111"
+
+[scripts]
+test = "anchor test"

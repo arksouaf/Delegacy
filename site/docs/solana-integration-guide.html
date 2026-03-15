@@ -1,0 +1,346 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Solana Integration Guide — Delegacy</title>
+  <style>
+    :root {
+      --bg: #0d1117;
+      --surface: #161b22;
+      --border: #30363d;
+      --text: #e6edf3;
+      --text-muted: #8b949e;
+      --accent: #58a6ff;
+      --accent-subtle: #1f6feb22;
+      --green: #3fb950;
+      --purple: #bc8cff;
+      --code-bg: #1c2129;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      padding: 0;
+    }
+    nav {
+      position: sticky;
+      top: 0;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      z-index: 100;
+      flex-wrap: wrap;
+    }
+    nav .logo { font-weight: 700; font-size: 1.2rem; color: var(--accent); text-decoration: none; }
+    nav .sep { color: var(--border); font-size: 1.2rem; user-select: none; }
+    nav .chain-label {
+      font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em;
+      padding: 0.15rem 0.5rem; border-radius: 4px; font-weight: 700;
+    }
+    nav .chain-label.evm { background: #3fb95022; color: var(--green); }
+    nav .chain-label.sol { background: #bc8cff22; color: var(--purple); }
+    nav a { color: var(--text-muted); text-decoration: none; font-size: 0.9rem; transition: color 0.2s; }
+    nav a:hover, nav a.active { color: var(--text); }
+    .container { max-width: 900px; margin: 0 auto; padding: 3rem 2rem 6rem; }
+    h1 {
+      font-size: 2.4rem; margin-bottom: 2rem;
+      background: linear-gradient(135deg, var(--purple), var(--accent));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    h2 { font-size: 1.5rem; margin: 2.5rem 0 1rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; }
+    h3 { font-size: 1.15rem; margin: 1.5rem 0 0.5rem; color: var(--purple); }
+    pre {
+      background: var(--code-bg); border: 1px solid var(--border); border-radius: 8px;
+      padding: 1.25rem; overflow-x: auto;
+      font-family: 'Fira Code', 'Cascadia Code', 'JetBrains Mono', monospace;
+      font-size: 0.82rem; line-height: 1.5; margin: 1rem 0; white-space: pre; position: relative;
+    }
+    pre .lang-tag {
+      position: absolute; top: 0.4rem; right: 0.6rem;
+      font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em;
+    }
+    code {
+      font-family: 'Fira Code', 'Cascadia Code', 'JetBrains Mono', monospace;
+      font-size: 0.88em; background: var(--code-bg); padding: 0.15em 0.4em; border-radius: 4px;
+    }
+    pre code { background: none; padding: 0; }
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+    th, td { text-align: left; padding: 0.75rem 1rem; border: 1px solid var(--border); }
+    th { background: var(--surface); font-weight: 600; color: var(--purple); }
+    td { background: var(--code-bg); }
+    p { margin: 0.75rem 0; }
+    .badge {
+      display: inline-block; background: #bc8cff22; color: var(--purple);
+      padding: 0.15rem 0.6rem; border-radius: 12px; font-size: 0.8rem; font-weight: 600;
+      margin-bottom: 1.5rem;
+    }
+    .step-num {
+      display: inline-block; width: 2rem; height: 2rem; line-height: 2rem;
+      text-align: center; border-radius: 50%; background: var(--purple);
+      color: var(--bg); font-weight: 700; font-size: 0.9rem; margin-right: 0.5rem;
+    }
+    .kw  { color: #ff7b72; }
+    .str { color: #a5d6ff; }
+    .fn  { color: #d2a8ff; }
+    .cm  { color: #8b949e; }
+    .num { color: #79c0ff; }
+    .typ { color: #ff7b72; }
+    hr { border: none; border-top: 1px solid var(--border); margin: 3rem 0; }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="../index.html" class="logo">Delegacy</a>
+    <span class="chain-label evm">EVM</span>
+    <a href="architecture.html">Architecture</a>
+    <a href="integration-guide.html">Integration</a>
+    <a href="use-cases.html">Use Cases</a>
+    <span class="sep">│</span>
+    <span class="chain-label sol">SOLANA</span>
+    <a href="solana-architecture.html">Architecture</a>
+    <a href="solana-integration-guide.html" class="active">Integration</a>
+    <a href="solana-use-cases.html">Use Cases</a>
+  </nav>
+
+  <div class="container">
+    <span class="badge">Solana · Developer Guide</span>
+    <h1>Solana Integration Guide</h1>
+
+    <h2>Quick Start — 5 Minutes to Session Keys on Solana</h2>
+
+    <h3><span class="step-num">1</span> Install the SDK</h3>
+<pre><span class="lang-tag">bash</span>
+npm install @delegacy/solana-sdk
+<span class="cm"># or</span>
+pnpm add @delegacy/solana-sdk
+<span class="cm"># or</span>
+yarn add @delegacy/solana-sdk</pre>
+
+    <h3><span class="step-num">2</span> Get API Credentials</h3>
+    <p>Sign up at <a href="https://Delegacy.io" style="color:var(--accent)">Delegacy.io</a> and get your API key:</p>
+    <ul style="margin:0.5rem 0 0.5rem 1.5rem;color:var(--text-muted)">
+      <li><code>sg_test_xxx</code> for devnet / testnet</li>
+      <li><code>sg_live_xxx</code> for mainnet-beta</li>
+    </ul>
+
+    <h3><span class="step-num">3</span> Initialize the Client</h3>
+<pre><span class="lang-tag">typescript</span>
+<span class="kw">import</span> { <span class="typ">SolanaDelegacyClient</span> } <span class="kw">from</span> <span class="str">'@delegacy/solana-sdk'</span>;
+
+<span class="kw">const</span> client = <span class="kw">new</span> <span class="fn">SolanaDelegacyClient</span>({
+  cluster: <span class="str">'mainnet-beta'</span>,
+  rpcUrl:  <span class="str">'https://api.mainnet-beta.solana.com'</span>,
+});</pre>
+
+    <h3><span class="step-num">4</span> Create a Guard Account</h3>
+<pre><span class="lang-tag">typescript</span>
+<span class="kw">import</span> { <span class="typ">Keypair</span> } <span class="kw">from</span> <span class="str">'@solana/web3.js'</span>;
+
+<span class="cm">// User connects their Solana wallet (Phantom, Solflare, etc.)</span>
+<span class="kw">const</span> userKeypair = <span class="typ">Keypair</span>.<span class="fn">generate</span>();
+
+<span class="cm">// Initialize — PDA is deterministic, call is idempotent</span>
+<span class="kw">const</span> guardAccount = <span class="kw">await</span> client.<span class="fn">initializeAccount</span>(userKeypair);
+console.<span class="fn">log</span>(<span class="str">'Guard Account PDA:'</span>, guardAccount);</pre>
+
+    <h3><span class="step-num">5</span> Create a Session Key</h3>
+<pre><span class="lang-tag">typescript</span>
+<span class="kw">import</span> { <span class="fn">AllowlistPolicy</span>, <span class="fn">SpendingLimitPolicy</span> } <span class="kw">from</span> <span class="str">'@delegacy/solana-sdk'</span>;
+
+<span class="cm">// ONE TIME owner signature</span>
+<span class="kw">const</span> session = <span class="kw">await</span> client.<span class="fn">createSession</span>({
+  owner: userKeypair,
+  guardAccount,
+  label: <span class="str">'My Solana App Session'</span>,
+  ttlSeconds: <span class="num">24</span> * <span class="num">60</span> * <span class="num">60</span>,  <span class="cm">// 24 hours</span>
+  policies: [
+    <span class="fn">AllowlistPolicy</span>({
+      allowedPrograms: [<span class="str">'YourProgram111111111111111111111111111111111'</span>],
+    }),
+    <span class="fn">SpendingLimitPolicy</span>({ maxAmount: <span class="num">1_000_000_000n</span> }), <span class="cm">// 1 SOL</span>
+  ],
+});</pre>
+
+    <h3><span class="step-num">6</span> Execute — No Wallet Popups!</h3>
+<pre><span class="lang-tag">typescript</span>
+<span class="cm">// Session key signs — user is never prompted</span>
+<span class="kw">const</span> result = <span class="kw">await</span> client.<span class="fn">execute</span>({
+  session,
+  targetProgram: <span class="str">'YourProgram111111111111111111111111111111111'</span>,
+  instructionData: Buffer.<span class="fn">from</span>([<span class="cm">/* encoded instruction */</span>]),
+});
+
+console.<span class="fn">log</span>(<span class="str">'Signature:'</span>, result.signature);</pre>
+
+    <hr>
+
+    <h2>Supported Clusters</h2>
+    <table>
+      <thead><tr><th>Cluster</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><td>Mainnet-Beta</td><td>✅ Production</td></tr>
+        <tr><td>Devnet</td><td>✅ Testing</td></tr>
+        <tr><td>Testnet</td><td>✅ Testing</td></tr>
+        <tr><td>Localnet</td><td>✅ Development</td></tr>
+      </tbody>
+    </table>
+
+    <h2>Policy Reference</h2>
+
+    <h3>SpendingLimitPolicy</h3>
+    <p>Caps total lamports (or SPL token amount) a session key can spend.</p>
+<pre><span class="lang-tag">typescript</span>
+<span class="fn">SpendingLimitPolicy</span>({
+  maxAmount: <span class="num">10_000_000_000n</span>,  <span class="cm">// 10 SOL in lamports</span>
+})
+
+<span class="cm">// With SPL token:</span>
+<span class="fn">SpendingLimitPolicy</span>({
+  maxAmount: <span class="num">1_000_000n</span>,       <span class="cm">// 1 USDC (6 decimals)</span>
+  tokenMint: <span class="str">'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v'</span>,
+})</pre>
+
+    <h3>AllowlistPolicy</h3>
+    <p>Restricts which programs the session key can call via CPI.</p>
+<pre><span class="lang-tag">typescript</span>
+<span class="fn">AllowlistPolicy</span>({
+  allowedPrograms: [
+    <span class="str">'JUP6LkbZbjS1jKKwapdHNy74zcZ3tLUZoi5QNyVTaV4'</span>,  <span class="cm">// Jupiter</span>
+    <span class="str">'RVKd61ztZW9GUwhRbbLoYVRE5Xf1B2tVscKqwZqXgEr'</span>,  <span class="cm">// Raydium</span>
+  ],
+})</pre>
+    <p style="color:var(--text-muted);font-size:0.9em">
+      <strong>Note:</strong> Unlike EVM's <code>(target, selector)</code> pairs, Solana uses program IDs only — function routing is handled by each program's instruction discriminator.
+    </p>
+
+    <h3>RateLimitPolicy</h3>
+    <p>Limits operations per time window.</p>
+<pre><span class="lang-tag">typescript</span>
+<span class="fn">RateLimitPolicy</span>({
+  maxOps: <span class="num">100</span>,          <span class="cm">// max operations</span>
+  windowSeconds: <span class="num">3600</span>,  <span class="cm">// per 1 hour</span>
+})</pre>
+
+    <h3>ComputeLimitPolicy</h3>
+    <p>Caps total compute units consumed (Solana's equivalent of gas).</p>
+<pre><span class="lang-tag">typescript</span>
+<span class="fn">ComputeLimitPolicy</span>({
+  maxComputeUnits: <span class="num">50_000_000n</span>,  <span class="cm">// 50M CUs total budget</span>
+})</pre>
+    <p style="color:var(--text-muted);font-size:0.9em">
+      Replaces EVM's <code>GasLimitPolicy</code>. Solana's base CU budget per instruction is 200K, with a per-transaction cap of 1.4M.
+    </p>
+
+    <hr>
+
+    <h2>REST API</h2>
+
+    <h3>Create Guard Account</h3>
+<pre><span class="lang-tag">http</span>
+POST /api/v1/solana/accounts
+Authorization: Bearer sg_live_xxx
+Content-Type: application/json
+
+{
+  "ownerPublicKey": "7xKXtg...",
+  "cluster": "mainnet-beta"
+}</pre>
+
+    <h3>Derive Guard Account PDA</h3>
+<pre><span class="lang-tag">http</span>
+GET /api/v1/solana/accounts/:ownerPublicKey/derive
+Authorization: Bearer sg_live_xxx</pre>
+
+    <h3>Create Session</h3>
+<pre><span class="lang-tag">http</span>
+POST /api/v1/solana/sessions
+Authorization: Bearer sg_live_xxx
+Content-Type: application/json
+
+{
+  "guardAccount": "3yZe...",
+  "cluster": "mainnet-beta",
+  "ttlSeconds": 86400,
+  "label": "Game Session",
+  "policies": [
+    { "type": "spending-limit", "maxAmount": "1000000000" },
+    { "type": "allowlist", "allowedPrograms": ["YourProgram1111..."] }
+  ]
+}</pre>
+
+    <h3>Revoke Session</h3>
+<pre><span class="lang-tag">http</span>
+DELETE /api/v1/solana/sessions/:guardAccount/:sessionKey
+Authorization: Bearer sg_live_xxx</pre>
+
+    <h3>Send Transaction</h3>
+<pre><span class="lang-tag">http</span>
+POST /api/v1/solana/transactions/send
+Authorization: Bearer sg_live_xxx
+Content-Type: application/json
+
+{
+  "cluster": "mainnet-beta",
+  "transaction": "base64-encoded-transaction"
+}</pre>
+
+    <h3>Simulate Transaction</h3>
+<pre><span class="lang-tag">http</span>
+POST /api/v1/solana/transactions/simulate
+Authorization: Bearer sg_live_xxx
+Content-Type: application/json
+
+{
+  "cluster": "mainnet-beta",
+  "transaction": "base64-encoded-transaction"
+}</pre>
+
+    <hr>
+
+    <h2>Error Handling</h2>
+<pre><span class="lang-tag">typescript</span>
+<span class="kw">try</span> {
+  <span class="kw">await</span> client.<span class="fn">execute</span>({ session, targetProgram, instructionData });
+} <span class="kw">catch</span> (error) {
+  <span class="kw">if</span> (error.message.<span class="fn">includes</span>(<span class="str">'SessionExpired'</span>)) {
+    <span class="cm">// Session expired — create a new one (user signs again)</span>
+    session = <span class="kw">await</span> client.<span class="fn">createSession</span>({ ... });
+  } <span class="kw">else if</span> (error.message.<span class="fn">includes</span>(<span class="str">'SpendingLimitExceeded'</span>)) {
+    console.<span class="fn">log</span>(<span class="str">'Session budget used up'</span>);
+  } <span class="kw">else if</span> (error.message.<span class="fn">includes</span>(<span class="str">'ProgramNotAllowed'</span>)) {
+    console.<span class="fn">log</span>(<span class="str">'Program not in session allowlist'</span>);
+  } <span class="kw">else if</span> (error.message.<span class="fn">includes</span>(<span class="str">'RateLimitExceeded'</span>)) {
+    console.<span class="fn">log</span>(<span class="str">'Rate limit reached — wait for window reset'</span>);
+  } <span class="kw">else if</span> (error.message.<span class="fn">includes</span>(<span class="str">'ComputeLimitExceeded'</span>)) {
+    console.<span class="fn">log</span>(<span class="str">'Compute unit budget used up'</span>);
+  }
+}</pre>
+
+    <hr>
+
+    <h2>EVM → Solana Migration Cheatsheet</h2>
+    <table>
+      <thead><tr><th>EVM Concept</th><th>Solana Equivalent</th></tr></thead>
+      <tbody>
+        <tr><td><code>DelegacyClient</code></td><td><code>SolanaDelegacyClient</code></td></tr>
+        <tr><td><code>createAccount({ owner })</code></td><td><code>initializeAccount(ownerKeypair)</code></td></tr>
+        <tr><td><code>0x...</code> addresses</td><td>Base58 public keys</td></tr>
+        <tr><td><code>chainId: 8453</code></td><td><code>cluster: 'mainnet-beta'</code></td></tr>
+        <tr><td><code>GasLimitPolicy</code></td><td><code>ComputeLimitPolicy</code></td></tr>
+        <tr><td><code>AllowlistPolicy({ rules })</code></td><td><code>AllowlistPolicy({ allowedPrograms })</code></td></tr>
+        <tr><td><code>data: '0x...'</code> (ABI-encoded)</td><td><code>instructionData: Buffer</code> (Borsh/raw)</td></tr>
+        <tr><td>UserOperations + Bundler</td><td>Native Solana transactions</td></tr>
+        <tr><td>Paymaster (gas sponsorship)</td><td>Fee payer (any account can pay)</td></tr>
+        <tr><td><code>receipt.transactionHash</code></td><td><code>result.signature</code></td></tr>
+        <tr><td>Smart contract deployment</td><td>PDA derivation (no deployment needed)</td></tr>
+      </tbody>
+    </table>
+  </div>
+</body>
+</html>

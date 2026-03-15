@@ -1,0 +1,379 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Integration Guide — Delegacy</title>
+  <style>
+    :root {
+      --bg: #0d1117;
+      --surface: #161b22;
+      --border: #30363d;
+      --text: #e6edf3;
+      --text-muted: #8b949e;
+      --accent: #58a6ff;
+      --accent-subtle: #1f6feb22;
+      --green: #3fb950;
+      --code-bg: #1c2129;
+      --purple: #bc8cff;
+      --orange: #f0883e;
+      --red: #f85149;
+      --yellow: #d29922;
+      --cyan: #39d353;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      padding: 0;
+    }
+    nav {
+      position: sticky;
+      top: 0;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+      z-index: 100;
+    }
+    nav .logo {
+      font-weight: 700;
+      font-size: 1.2rem;
+      color: var(--accent);
+      text-decoration: none;
+    }
+    nav a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: color 0.2s;
+    }
+    nav a:hover, nav a.active { color: var(--text); }
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 3rem 2rem 6rem;
+    }
+    h1 {
+      font-size: 2.4rem;
+      margin-bottom: 0.5rem;
+      background: linear-gradient(135deg, var(--accent), var(--green));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .subtitle {
+      color: var(--text-muted);
+      font-size: 1.1rem;
+      margin-bottom: 2rem;
+    }
+    h2 {
+      font-size: 1.5rem;
+      margin: 2.5rem 0 1rem;
+      color: var(--text);
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 0.5rem;
+    }
+    h3 {
+      font-size: 1.15rem;
+      margin: 1.5rem 0 0.75rem;
+      color: var(--accent);
+    }
+    hr {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 3rem 0;
+    }
+    pre {
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.25rem;
+      overflow-x: auto;
+      font-family: 'Fira Code', 'Cascadia Code', 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      line-height: 1.6;
+      margin: 1rem 0;
+      position: relative;
+    }
+    pre .lang-tag {
+      position: absolute;
+      top: 0;
+      right: 0;
+      background: var(--border);
+      color: var(--text-muted);
+      font-size: 0.7rem;
+      padding: 0.2rem 0.6rem;
+      border-radius: 0 8px 0 6px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    code {
+      font-family: 'Fira Code', 'Cascadia Code', 'JetBrains Mono', monospace;
+      font-size: 0.88em;
+      background: var(--code-bg);
+      padding: 0.15em 0.4em;
+      border-radius: 4px;
+    }
+    pre code { background: none; padding: 0; font-size: inherit; }
+    /* Syntax highlighting */
+    .kw { color: var(--purple); }
+    .str { color: #a5d6ff; }
+    .cmt { color: var(--text-muted); font-style: italic; }
+    .fn { color: #d2a8ff; }
+    .num { color: var(--orange); }
+    .type { color: var(--green); }
+    .prop { color: var(--accent); }
+    .op { color: var(--red); }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+    }
+    th, td {
+      text-align: left;
+      padding: 0.75rem 1rem;
+      border: 1px solid var(--border);
+    }
+    th {
+      background: var(--surface);
+      font-weight: 600;
+      color: var(--accent);
+    }
+    td { background: var(--code-bg); }
+    p { margin: 0.75rem 0; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    ul, ol { margin: 0.5rem 0; padding-left: 1.5rem; }
+    li { margin: 0.3rem 0; }
+    .badge {
+      display: inline-block;
+      background: var(--accent-subtle);
+      color: var(--accent);
+      padding: 0.15rem 0.6rem;
+      border-radius: 12px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+    }
+    .step-num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: var(--bg);
+      font-weight: 700;
+      font-size: 0.85rem;
+      margin-right: 0.5rem;
+      flex-shrink: 0;
+    }
+    h3 .step-num { vertical-align: middle; }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="../index.html" class="logo">Delegacy</a>
+    <span style="font-size:0.7rem;text-transform:uppercase;letter-spacing:0.08em;padding:0.15rem 0.5rem;border-radius:4px;font-weight:700;background:#3fb95022;color:#3fb950">EVM</span>
+    <a href="architecture.html">Architecture</a>
+    <a href="integration-guide.html" class="active">Integration</a>
+    <a href="use-cases.html">Use Cases</a>
+    <span style="color:#30363d;font-size:1.2rem;user-select:none">│</span>
+    <span style="font-size:0.7rem;text-transform:uppercase;letter-spacing:0.08em;padding:0.15rem 0.5rem;border-radius:4px;font-weight:700;background:#bc8cff22;color:#bc8cff">SOLANA</span>
+    <a href="solana-architecture.html">Architecture</a>
+    <a href="solana-integration-guide.html">Integration</a>
+    <a href="solana-use-cases.html">Use Cases</a>
+  </nav>
+
+  <div class="container">
+    <span class="badge">Developer Docs</span>
+    <h1>Integration Guide</h1>
+    <p class="subtitle">Quick Start — 5 Minutes to Session Keys</p>
+
+    <h3><span class="step-num">1</span> Install the SDK</h3>
+<pre><span class="lang-tag">bash</span><code>npm install @delegacy/sdk
+<span class="cmt"># or</span>
+pnpm add @delegacy/sdk
+<span class="cmt"># or</span>
+yarn add @delegacy/sdk</code></pre>
+
+    <h3><span class="step-num">2</span> Get API Credentials</h3>
+    <p>Sign up at <a href="https://Delegacy.io">Delegacy.io</a> and get your API key:</p>
+    <ul>
+      <li><code>sg_test_xxx</code> for testnets (Sepolia, Base Goerli)</li>
+      <li><code>sg_live_xxx</code> for production (Ethereum, Polygon, Base, Arbitrum, Optimism)</li>
+    </ul>
+
+    <h3><span class="step-num">3</span> Initialize the Client</h3>
+<pre><span class="lang-tag">typescript</span><code><span class="kw">import</span> { <span class="type">DelegacyClient</span> } <span class="kw">from</span> <span class="str">'@delegacy/sdk'</span>;
+
+<span class="kw">const</span> client = <span class="kw">new</span> <span class="type">DelegacyClient</span>({
+  <span class="prop">chainId</span>: <span class="num">8453</span>,  <span class="cmt">// Base</span>
+  <span class="prop">rpcUrl</span>: <span class="str">'https://mainnet.base.org'</span>,
+  <span class="prop">bundlerUrl</span>: <span class="str">'https://bundler.delegacy.io/base'</span>,
+  <span class="prop">paymasterUrl</span>: <span class="str">'https://paymaster.delegacy.io/base'</span>, <span class="cmt">// optional: sponsor gas</span>
+});</code></pre>
+
+    <h3><span class="step-num">4</span> Create a Smart Account for Your User</h3>
+<pre><span class="lang-tag">typescript</span><code><span class="cmt">// User connects their wallet (MetaMask, WalletConnect, etc.)</span>
+<span class="kw">const</span> userWallet = <span class="str">'0x...'</span>; <span class="cmt">// from your wallet connection</span>
+
+<span class="cmt">// Deploy a smart account (idempotent — returns existing if already deployed)</span>
+<span class="kw">const</span> account = <span class="kw">await</span> client.<span class="fn">createAccount</span>({ <span class="prop">owner</span>: userWallet });
+console.<span class="fn">log</span>(<span class="str">'Smart Account:'</span>, account);</code></pre>
+
+    <h3><span class="step-num">5</span> Create a Session Key</h3>
+<pre><span class="lang-tag">typescript</span><code><span class="kw">import</span> { <span class="type">AllowlistPolicy</span>, <span class="type">SpendingLimitPolicy</span> } <span class="kw">from</span> <span class="str">'@delegacy/sdk'</span>;
+
+<span class="cmt">// This is the ONE TIME the user's master key signs</span>
+<span class="kw">const</span> session = <span class="kw">await</span> client.<span class="fn">createSession</span>({
+  account,
+  <span class="prop">label</span>: <span class="str">'My App Session'</span>,
+  <span class="prop">ttlSeconds</span>: <span class="num">24</span> * <span class="num">60</span> * <span class="num">60</span>,  <span class="cmt">// 24 hours</span>
+  <span class="prop">policies</span>: [
+    <span class="fn">AllowlistPolicy</span>({
+      <span class="prop">rules</span>: [
+        { <span class="prop">target</span>: YOUR_CONTRACT, <span class="prop">selector</span>: <span class="str">'0x12345678'</span> },
+      ],
+    }),
+    <span class="fn">SpendingLimitPolicy</span>({ <span class="prop">maxAmount</span>: <span class="num">1_000_000n</span> }),  <span class="cmt">// 1 USDC</span>
+  ],
+});</code></pre>
+
+    <h3><span class="step-num">6</span> Execute Transactions (No Wallet Popups!)</h3>
+<pre><span class="lang-tag">typescript</span><code><span class="cmt">// This uses the session key — user is never prompted</span>
+<span class="kw">const</span> receipt = <span class="kw">await</span> client.<span class="fn">execute</span>({
+  session,
+  <span class="prop">target</span>: YOUR_CONTRACT,
+  <span class="prop">data</span>: <span class="str">'0x...'</span>,  <span class="cmt">// encoded function call</span>
+});
+
+console.<span class="fn">log</span>(<span class="str">'Tx:'</span>, receipt.transactionHash);</code></pre>
+
+    <hr>
+
+    <h2>Supported Chains</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Chain</th>
+          <th>Chain ID</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Ethereum Mainnet</td><td>1</td><td>&#x2705; Production</td></tr>
+        <tr><td>Polygon</td><td>137</td><td>&#x2705; Production</td></tr>
+        <tr><td>Base</td><td>8453</td><td>&#x2705; Production</td></tr>
+        <tr><td>Arbitrum One</td><td>42161</td><td>&#x2705; Production</td></tr>
+        <tr><td>Optimism</td><td>10</td><td>&#x2705; Production</td></tr>
+        <tr><td>Sepolia (testnet)</td><td>11155111</td><td>&#x2705; Testing</td></tr>
+        <tr><td>Base Goerli (testnet)</td><td>84531</td><td>&#x2705; Testing</td></tr>
+      </tbody>
+    </table>
+
+    <h2>Policy Reference</h2>
+
+    <h3>SpendingLimitPolicy</h3>
+    <p>Caps the total value a session key can spend.</p>
+<pre><span class="lang-tag">typescript</span><code><span class="fn">SpendingLimitPolicy</span>({
+  <span class="prop">maxAmount</span>: <span class="num">10_000_000n</span>,   <span class="cmt">// in token's smallest unit (e.g., 10 USDC)</span>
+  <span class="prop">token</span>: USDC_ADDRESS,       <span class="cmt">// optional; omit for native ETH</span>
+})</code></pre>
+
+    <h3>AllowlistPolicy</h3>
+    <p>Restricts which contracts and functions the session key can call.</p>
+<pre><span class="lang-tag">typescript</span><code><span class="fn">AllowlistPolicy</span>({
+  <span class="prop">rules</span>: [
+    { <span class="prop">target</span>: CONTRACT_A, <span class="prop">selector</span>: <span class="str">'0x12345678'</span> },  <span class="cmt">// specific function</span>
+    { <span class="prop">target</span>: CONTRACT_B, <span class="prop">selector</span>: <span class="str">'0xabcdef01'</span> },  <span class="cmt">// another function</span>
+  ],
+})</code></pre>
+
+    <h3>TimeBoundPolicy</h3>
+    <p>Sets session duration (alternative to <code>ttlSeconds</code>).</p>
+<pre><span class="lang-tag">typescript</span><code><span class="fn">TimeBoundPolicy</span>({ <span class="prop">duration</span>: <span class="str">'24h'</span> })  <span class="cmt">// supports: 30s, 5m, 2h, 7d, 1w</span></code></pre>
+
+    <h3>RateLimitPolicy</h3>
+    <p>Limits operations per time window.</p>
+<pre><span class="lang-tag">typescript</span><code><span class="fn">RateLimitPolicy</span>({
+  <span class="prop">maxOps</span>: <span class="num">100</span>,           <span class="cmt">// max operations</span>
+  <span class="prop">windowSeconds</span>: <span class="num">3600</span>,   <span class="cmt">// per 1 hour</span>
+})</code></pre>
+
+    <h3>GasLimitPolicy</h3>
+    <p>Caps total gas consumption.</p>
+<pre><span class="lang-tag">typescript</span><code><span class="fn">GasLimitPolicy</span>({ <span class="prop">maxGas</span>: <span class="num">10_000_000n</span> })  <span class="cmt">// 10M gas units total</span></code></pre>
+
+    <hr>
+
+    <h2>REST API</h2>
+    <p>If you prefer REST over the SDK:</p>
+
+    <h3>Create Account</h3>
+<pre><span class="lang-tag">http</span><code><span class="kw">POST</span> /api/v1/accounts
+<span class="prop">Authorization</span>: Bearer sg_live_xxx
+<span class="prop">Content-Type</span>: application/json
+
+{
+  <span class="str">"ownerAddress"</span>: <span class="str">"0x..."</span>,
+  <span class="str">"chainId"</span>: <span class="num">8453</span>
+}</code></pre>
+
+    <h3>Create Session</h3>
+<pre><span class="lang-tag">http</span><code><span class="kw">POST</span> /api/v1/sessions
+<span class="prop">Authorization</span>: Bearer sg_live_xxx
+<span class="prop">Content-Type</span>: application/json
+
+{
+  <span class="str">"account"</span>: <span class="str">"0x..."</span>,
+  <span class="str">"chainId"</span>: <span class="num">8453</span>,
+  <span class="str">"ttlSeconds"</span>: <span class="num">86400</span>,
+  <span class="str">"label"</span>: <span class="str">"Game Session"</span>,
+  <span class="str">"policies"</span>: [
+    { <span class="str">"type"</span>: <span class="str">"spending-limit"</span>, <span class="str">"maxAmount"</span>: <span class="str">"1000000"</span> },
+    { <span class="str">"type"</span>: <span class="str">"allowlist"</span>, <span class="str">"rules"</span>: [{ <span class="str">"target"</span>: <span class="str">"0x..."</span>, <span class="str">"selector"</span>: <span class="str">"0x..."</span> }] }
+  ]
+}</code></pre>
+
+    <h3>Revoke Session</h3>
+<pre><span class="lang-tag">http</span><code><span class="kw">DELETE</span> /api/v1/sessions/:account/:sessionKey
+<span class="prop">Authorization</span>: Bearer sg_live_xxx</code></pre>
+
+    <h3>Relay UserOperation</h3>
+<pre><span class="lang-tag">http</span><code><span class="kw">POST</span> /api/v1/bundler/send
+<span class="prop">Authorization</span>: Bearer sg_live_xxx
+<span class="prop">Content-Type</span>: application/json
+
+{
+  <span class="str">"chainId"</span>: <span class="num">8453</span>,
+  <span class="str">"userOp"</span>: { ... }
+}</code></pre>
+
+    <hr>
+
+    <h2>Error Handling</h2>
+<pre><span class="lang-tag">typescript</span><code><span class="kw">try</span> {
+  <span class="kw">await</span> client.<span class="fn">execute</span>({ session, target, data });
+} <span class="kw">catch</span> (error) {
+  <span class="kw">if</span> (error.message.<span class="fn">includes</span>(<span class="str">'SessionKeyExpired'</span>)) {
+    <span class="cmt">// Session expired — create a new one (user signs again)</span>
+    session = <span class="kw">await</span> client.<span class="fn">createSession</span>({ ... });
+  } <span class="kw">else if</span> (error.message.<span class="fn">includes</span>(<span class="str">'SpendingLimitExceeded'</span>)) {
+    <span class="cmt">// Budget exhausted</span>
+    console.<span class="fn">log</span>(<span class="str">'Session budget used up'</span>);
+  } <span class="kw">else if</span> (error.message.<span class="fn">includes</span>(<span class="str">'PolicyCheckFailed'</span>)) {
+    <span class="cmt">// Tried to call a non-allowed function</span>
+    console.<span class="fn">log</span>(<span class="str">'Action not allowed by session policy'</span>);
+  }
+}</code></pre>
+  </div>
+</body>
+</html>

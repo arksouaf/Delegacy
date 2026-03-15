@@ -1,0 +1,344 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Solana Architecture — Delegacy</title>
+  <style>
+    :root {
+      --bg: #0d1117;
+      --surface: #161b22;
+      --border: #30363d;
+      --text: #e6edf3;
+      --text-muted: #8b949e;
+      --accent: #58a6ff;
+      --accent-subtle: #1f6feb22;
+      --green: #3fb950;
+      --purple: #bc8cff;
+      --code-bg: #1c2129;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      padding: 0;
+    }
+    nav {
+      position: sticky;
+      top: 0;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      z-index: 100;
+      flex-wrap: wrap;
+    }
+    nav .logo {
+      font-weight: 700;
+      font-size: 1.2rem;
+      color: var(--accent);
+      text-decoration: none;
+    }
+    nav .sep {
+      color: var(--border);
+      font-size: 1.2rem;
+      user-select: none;
+    }
+    nav .chain-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding: 0.15rem 0.5rem;
+      border-radius: 4px;
+      font-weight: 700;
+    }
+    nav .chain-label.evm { background: #3fb95022; color: var(--green); }
+    nav .chain-label.sol { background: #bc8cff22; color: var(--purple); }
+    nav a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: color 0.2s;
+    }
+    nav a:hover, nav a.active { color: var(--text); }
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 3rem 2rem 6rem;
+    }
+    h1 {
+      font-size: 2.4rem;
+      margin-bottom: 2rem;
+      background: linear-gradient(135deg, var(--purple), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    h2 {
+      font-size: 1.5rem;
+      margin: 2.5rem 0 1rem;
+      color: var(--text);
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 0.5rem;
+    }
+    h3 { font-size: 1.15rem; margin: 1.5rem 0 0.5rem; color: var(--purple); }
+    pre {
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.25rem;
+      overflow-x: auto;
+      font-family: 'Fira Code', 'Cascadia Code', 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      line-height: 1.5;
+      margin: 1rem 0;
+      white-space: pre;
+    }
+    code {
+      font-family: 'Fira Code', 'Cascadia Code', 'JetBrains Mono', monospace;
+      font-size: 0.88em;
+      background: var(--code-bg);
+      padding: 0.15em 0.4em;
+      border-radius: 4px;
+    }
+    pre code { background: none; padding: 0; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+    }
+    th, td {
+      text-align: left;
+      padding: 0.75rem 1rem;
+      border: 1px solid var(--border);
+    }
+    th {
+      background: var(--surface);
+      font-weight: 600;
+      color: var(--purple);
+    }
+    td { background: var(--code-bg); }
+    p { margin: 0.75rem 0; }
+    .badge {
+      display: inline-block;
+      background: #bc8cff22;
+      color: var(--purple);
+      padding: 0.15rem 0.6rem;
+      border-radius: 12px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+    }
+    .compare-table td:first-child { font-weight: 600; color: var(--text-muted); }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="../index.html" class="logo">Delegacy</a>
+    <span class="chain-label evm">EVM</span>
+    <a href="architecture.html">Architecture</a>
+    <a href="integration-guide.html">Integration</a>
+    <a href="use-cases.html">Use Cases</a>
+    <span class="sep">│</span>
+    <span class="chain-label sol">SOLANA</span>
+    <a href="solana-architecture.html" class="active">Architecture</a>
+    <a href="solana-integration-guide.html">Integration</a>
+    <a href="solana-use-cases.html">Use Cases</a>
+  </nav>
+
+  <div class="container">
+    <span class="badge">Solana · Technical Reference</span>
+    <h1>Solana Architecture</h1>
+
+    <h2>System Overview</h2>
+<pre>
+┌─────────────────────────────────────────────────────────────────────────┐
+│                        Developer's Application                         │
+│                  (Game, DeFi App, Commerce Platform)                    │
+└────────────────────┬──────────────────────────────────┬─────────────────┘
+                     │ SDK (@delegacy/solana-sdk)    │  REST API
+                     ▼                                   ▼
+┌────────────────────────────────────┐  ┌──────────────────────────────┐
+│    SolanaDelegacyClient        │  │    Delegacy API          │
+│  ┌─────────────┐ ┌──────────────┐  │  │  ┌────────────────────────┐  │
+│  │ SessionKey   │ │ Transaction  │  │  │  │ /api/v1/solana/        │  │
+│  │ Manager      │ │ Builder      │  │  │  │   accounts             │  │
+│  └──────┬───────┘ └──────┬───────┘  │  │  │   sessions             │  │
+│         │                │          │  │  │   transactions          │  │
+│  ┌──────┴────────────────┴───────┐  │  │  └────────────────────────┘  │
+│  │ Policy Builders               │  │  │  Auth + Rate Limiting       │
+│  │ (Spending, Allowlist, Rate,   │  │  └──────────────┬───────────────┘
+│  │  Compute, TimeBound)          │  │                  │
+│  └───────────────────────────────┘  │                  │
+└────────────────────┬────────────────┘                  │
+                     │                                   │
+                     ▼                                   ▼
+┌─────────────────────────────────────────────────────────────────────────┐
+│                        Solana RPC Node                                  │
+│                  (Sends transactions directly)                          │
+└────────────────────────────────────┬────────────────────────────────────┘
+                                     │
+                                     ▼
+┌─────────────────────────────────────────────────────────────────────────┐
+│                         Solana Blockchain                                │
+│                                                                         │
+│  ┌──────────────────────────────────────────────────────────────────┐   │
+│  │  Delegacy Program (Anchor)                                   │   │
+│  │                                                                  │   │
+│  │  ┌──────────────────┐  ┌──────────────────────────────────────┐  │   │
+│  │  │ Delegacy     │  │ Session Key Data (PDA)               │  │   │
+│  │  │ Account (PDA)    │  │  ├── valid_after / valid_until       │  │   │
+│  │  │  ├── owner       │  │  ├── revoked flag                    │  │   │
+│  │  │  ├── session_cnt │  │  └── policy_count                    │  │   │
+│  │  │  └── bump        │  └──────────────────────────────────────┘  │   │
+│  │  └──────────────────┘                                            │   │
+│  │                                                                  │   │
+│  │  ┌────────────────────────────────────────────────────────────┐  │   │
+│  │  │ Policy PDAs                                                │  │   │
+│  │  │  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐     │  │   │
+│  │  │  │ Spending     │  │ Allowlist    │  │ Rate Limit   │     │  │   │
+│  │  │  │ Limit PDA    │  │ PDA         │  │ PDA          │     │  │   │
+│  │  │  └──────────────┘  └──────────────┘  └──────────────┘     │  │   │
+│  │  │  ┌──────────────┐                                          │  │   │
+│  │  │  │ Compute      │                                          │  │   │
+│  │  │  │ Limit PDA    │                                          │  │   │
+│  │  │  └──────────────┘                                          │  │   │
+│  │  └────────────────────────────────────────────────────────────┘  │   │
+│  │                                                                  │   │
+│  │  execute_via_session → CPI → Target Program                      │   │
+│  └──────────────────────────────────────────────────────────────────┘   │
+│                                                                         │
+│  ┌──────────────────────────────────────────────────────────────────┐   │
+│  │  Target Programs (Jupiter, Raydium, Game contracts, etc.)        │   │
+│  └──────────────────────────────────────────────────────────────────┘   │
+└─────────────────────────────────────────────────────────────────────────┘
+</pre>
+
+    <h2>Key Differences from EVM Architecture</h2>
+    <table class="compare-table">
+      <thead>
+        <tr><th>Aspect</th><th>EVM (ERC-4337)</th><th>Solana</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Account Model</td><td>Smart contract wallets</td><td>PDAs (Program Derived Addresses)</td></tr>
+        <tr><td>Transaction Flow</td><td>UserOp → Bundler → EntryPoint → Account</td><td>Transaction → RPC → Program directly</td></tr>
+        <tr><td>Signature Scheme</td><td>ECDSA (secp256k1)</td><td>Ed25519</td></tr>
+        <tr><td>Gas / Compute</td><td>Gas units + EIP-1559 pricing</td><td>Compute units (200K default per ix)</td></tr>
+        <tr><td>Policy Storage</td><td>Separate contract per policy type</td><td>PDA per policy instance, same program</td></tr>
+        <tr><td>Session Storage</td><td>Mapping in validator contract</td><td>PDA per session key</td></tr>
+        <tr><td>Delegation</td><td><code>validateUserOp()</code> module</td><td>CPI with <code>invoke_signed()</code></td></tr>
+        <tr><td>Replay Protection</td><td>EntryPoint nonce</td><td>Solana native tx nonce</td></tr>
+        <tr><td>Deployment</td><td>Factory deploys clone per user</td><td>PDA derivation (no deployment tx)</td></tr>
+      </tbody>
+    </table>
+
+    <h2>Data Flow: Creating a Session</h2>
+<pre>
+1. Developer app calls SDK → createSession(owner, guardAccount, policies, ttl)
+2. SDK generates Ed25519 keypair (session key)
+3. SDK builds registerSessionKey instruction (guard PDA + session PDA derivation)
+4. Transaction signed by OWNER KEYPAIR (one time)
+5. Transaction → Solana RPC → Delegacy Program
+6. Program → initializes SessionKeyData PDA
+7. Program → initializes each Policy PDA (one tx per policy config)
+8. Session key is now active on-chain
+9. SDK returns SolanaActiveSession (includes session secret key)
+</pre>
+
+    <h2>Data Flow: Using a Session Key</h2>
+<pre>
+ 1. App calls SDK → execute(session, targetProgram, instructionData)
+ 2. SDK builds execute_via_session instruction
+ 3. Transaction signed by the SESSION KEY (not owner!)
+ 4. Transaction → Solana RPC → Delegacy Program
+ 5. Program → loads SessionKeyData PDA → checks time bounds
+ 6. Program → checks revoked flag
+ 7. Program → loads AllowlistPolicy PDA → verifies target program
+ 8. Program → loads RateLimitPolicy PDA → checks ops count
+ 9. Program → loads SpendingLimitPolicy PDA → checks budget
+10. Program → loads ComputeLimitPolicy PDA → checks compute budget
+11. If all pass → CPI invoke_signed() → target program
+12. After CPI → updates rate limit counter, spending tracker, compute tracker
+</pre>
+
+    <h2>PDA Account Relationships</h2>
+<pre>
+Delegacy Program
+  └── derives → DelegacyAccount PDA (per user)
+       Seeds: ["session_guard", owner_pubkey]
+       Fields: owner, session_count, bump
+
+  └── derives → SessionKeyData PDA (per session)
+       Seeds: ["session_key", guard_account, session_pubkey]
+       Fields: guard_account, session_key, valid_after, valid_until,
+               revoked, policy_count, bump
+
+  └── derives → SpendingLimitPolicy PDA
+       Seeds: ["spending_limit", session_key_data_pda]
+       Fields: max_amount, amount_spent
+
+  └── derives → AllowlistPolicy PDA
+       Seeds: ["allowlist", session_key_data_pda]
+       Fields: allowed_programs (Vec&lt;Pubkey&gt;, max 10)
+
+  └── derives → RateLimitPolicy PDA
+       Seeds: ["rate_limit", session_key_data_pda]
+       Fields: max_ops, window_seconds, ops_count, window_start
+
+  └── derives → ComputeLimitPolicy PDA
+       Seeds: ["compute_limit", session_key_data_pda]
+       Fields: max_compute_units, compute_units_used
+</pre>
+
+    <h2>Security Model</h2>
+    <table>
+      <thead>
+        <tr><th>Layer</th><th>Protection</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Delegacy PDA</td><td>Only owner can register/revoke session keys</td></tr>
+        <tr><td>Session Key Data</td><td>Ed25519 signature verification + time bounds</td></tr>
+        <tr><td>Policies</td><td>On-chain enforced — no server trust required</td></tr>
+        <tr><td>Solana Runtime</td><td>Native replay protection via recent blockhash</td></tr>
+        <tr><td>CPI Invoke Signed</td><td>Program acts as signing authority for delegated calls</td></tr>
+        <tr><td>PDA Derivation</td><td>Deterministic, collision-resistant account addressing</td></tr>
+        <tr><td>Owner Key</td><td>Never transmitted — signs only once to install session</td></tr>
+      </tbody>
+    </table>
+
+    <h2>Anchor Program Structure</h2>
+<pre>
+programs/session-guard/src/
+├── lib.rs              # Program entry — 8 instructions
+├── state.rs            # Account structs (5 types)
+├── errors.rs           # DelegacyError enum (10 variants)
+└── instructions/
+    ├── mod.rs           # Module re-exports
+    ├── account.rs       # InitializeAccount handler
+    ├── session.rs       # Register / Revoke session key handlers
+    ├── policies.rs      # 4 policy config handlers
+    └── execute.rs       # ExecuteViaSession — validation + CPI
+</pre>
+
+    <h2>Compute Budget</h2>
+    <table>
+      <thead>
+        <tr><th>Operation</th><th>Estimated CUs</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>InitializeAccount</td><td>~15,000</td></tr>
+        <tr><td>RegisterSessionKey</td><td>~25,000</td></tr>
+        <tr><td>ConfigurePolicy (each)</td><td>~10,000</td></tr>
+        <tr><td>ExecuteViaSession (validation)</td><td>~50,000</td></tr>
+        <tr><td>CPI to target program</td><td>Variable (200K default)</td></tr>
+        <tr><td>Full session creation (4 policies)</td><td>~65,000</td></tr>
+      </tbody>
+    </table>
+    <p>Maximum per transaction: <strong>1,400,000 CUs</strong> (Solana limit). Delegacy operations stay well within this budget.</p>
+  </div>
+</body>
+</html>

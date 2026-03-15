@@ -1,0 +1,282 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Architecture — Delegacy</title>
+  <style>
+    :root {
+      --bg: #0d1117;
+      --surface: #161b22;
+      --border: #30363d;
+      --text: #e6edf3;
+      --text-muted: #8b949e;
+      --accent: #58a6ff;
+      --accent-subtle: #1f6feb22;
+      --green: #3fb950;
+      --code-bg: #1c2129;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      padding: 0;
+    }
+    nav {
+      position: sticky;
+      top: 0;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+      z-index: 100;
+    }
+    nav .logo {
+      font-weight: 700;
+      font-size: 1.2rem;
+      color: var(--accent);
+      text-decoration: none;
+    }
+    nav a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: color 0.2s;
+    }
+    nav a:hover, nav a.active { color: var(--text); }
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 3rem 2rem 6rem;
+    }
+    h1 {
+      font-size: 2.4rem;
+      margin-bottom: 2rem;
+      background: linear-gradient(135deg, var(--accent), var(--green));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    h2 {
+      font-size: 1.5rem;
+      margin: 2.5rem 0 1rem;
+      color: var(--text);
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 0.5rem;
+    }
+    pre {
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.25rem;
+      overflow-x: auto;
+      font-family: 'Fira Code', 'Cascadia Code', 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      line-height: 1.5;
+      margin: 1rem 0;
+      white-space: pre;
+    }
+    code {
+      font-family: 'Fira Code', 'Cascadia Code', 'JetBrains Mono', monospace;
+      font-size: 0.88em;
+      background: var(--code-bg);
+      padding: 0.15em 0.4em;
+      border-radius: 4px;
+    }
+    pre code { background: none; padding: 0; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+    }
+    th, td {
+      text-align: left;
+      padding: 0.75rem 1rem;
+      border: 1px solid var(--border);
+    }
+    th {
+      background: var(--surface);
+      font-weight: 600;
+      color: var(--accent);
+    }
+    td { background: var(--code-bg); }
+    p { margin: 0.75rem 0; }
+    .badge {
+      display: inline-block;
+      background: var(--accent-subtle);
+      color: var(--accent);
+      padding: 0.15rem 0.6rem;
+      border-radius: 12px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="../index.html" class="logo">Delegacy</a>
+    <span style="font-size:0.7rem;text-transform:uppercase;letter-spacing:0.08em;padding:0.15rem 0.5rem;border-radius:4px;font-weight:700;background:#3fb95022;color:#3fb950">EVM</span>
+    <a href="architecture.html" class="active">Architecture</a>
+    <a href="integration-guide.html">Integration</a>
+    <a href="use-cases.html">Use Cases</a>
+    <span style="color:#30363d;font-size:1.2rem;user-select:none">│</span>
+    <span style="font-size:0.7rem;text-transform:uppercase;letter-spacing:0.08em;padding:0.15rem 0.5rem;border-radius:4px;font-weight:700;background:#bc8cff22;color:#bc8cff">SOLANA</span>
+    <a href="solana-architecture.html">Architecture</a>
+    <a href="solana-integration-guide.html">Integration</a>
+    <a href="solana-use-cases.html">Use Cases</a>
+  </nav>
+
+  <div class="container">
+    <span class="badge">Technical Reference</span>
+    <h1>Architecture</h1>
+
+    <h2>System Overview</h2>
+<pre>
+┌─────────────────────────────────────────────────────────────────────────┐
+│                        Developer's Application                         │
+│                  (Game, DeFi App, Commerce Platform)                    │
+└────────────────────┬──────────────────────────────────┬─────────────────┘
+                     │  SDK (@delegacy/sdk)          │  REST API
+                     ▼                                   ▼
+┌────────────────────────────────────┐  ┌──────────────────────────────┐
+│       DelegacyClient           │  │    Delegacy API          │
+│  ┌─────────────┐ ┌──────────────┐  │  │  ┌────────────────────────┐  │
+│  │ SessionKey   │ │ BundlerClient│  │  │  │ /api/v1/accounts      │  │
+│  │ Manager      │ │              │  │  │  │ /api/v1/sessions      │  │
+│  └──────┬───────┘ └──────┬───────┘  │  │  │ /api/v1/bundler       │  │
+│         │                │          │  │  └────────────────────────┘  │
+│  ┌──────┴────────────────┴───────┐  │  │  Auth + Rate Limiting       │
+│  │ Policy Builders               │  │  └──────────────┬───────────────┘
+│  │ (Spending, Allowlist, Rate...)│  │                  │
+│  └───────────────────────────────┘  │                  │
+└────────────────────┬────────────────┘                  │
+                     │                                   │
+                     ▼                                   ▼
+┌─────────────────────────────────────────────────────────────────────────┐
+│                        ERC-4337 Bundler                                 │
+│                  (Collects UserOps, submits to chain)                   │
+└────────────────────────────────────┬────────────────────────────────────┘
+                                     │
+                                     ▼
+┌─────────────────────────────────────────────────────────────────────────┐
+│                         Blockchain (Ethereum / L2)                      │
+│                                                                         │
+│  ┌──────────────────┐  ┌────────────────────────────────────────────┐   │
+│  │  EntryPoint       │  │  Delegacy Contracts                    │   │
+│  │  (ERC-4337        │  │  ┌────────────────┐  ┌─────────────────┐  │   │
+│  │   Singleton)      │  │  │ Delegacy   │  │ SessionKey      │  │   │
+│  │                   │  │  │ Account        │  │ Validator       │  │   │
+│  │  Validates &      │  │  │ (per user)     │  │ (module)        │  │   │
+│  │  executes         │  │  └────────────────┘  └────────┬────────┘  │   │
+│  │  UserOps          │  │                               │           │   │
+│  │                   │  │  ┌────────────────────────────┴───────┐   │   │
+│  │                   │  │  │ Policies                            │   │   │
+│  │                   │  │  │ ┌──────────┐ ┌──────────┐          │   │   │
+│  │                   │  │  │ │Spending  │ │Allowlist │          │   │   │
+│  │                   │  │  │ │Limit     │ │Policy    │          │   │   │
+│  │                   │  │  │ └──────────┘ └──────────┘          │   │   │
+│  │                   │  │  │ ┌──────────┐ ┌──────────┐          │   │   │
+│  │                   │  │  │ │Rate      │ │Gas       │          │   │   │
+│  │                   │  │  │ │Limit     │ │Limit     │          │   │   │
+│  │                   │  │  │ └──────────┘ └──────────┘          │   │   │
+│  │                   │  │  └────────────────────────────────────┘   │   │
+│  └───────────────────┘  └──────────────────────────────────────────┘   │
+│                                                                         │
+│  ┌──────────────────┐                                                   │
+│  │  Paymaster        │  (Optional — sponsors gas for users)             │
+│  └──────────────────┘                                                   │
+└─────────────────────────────────────────────────────────────────────────┘
+</pre>
+
+    <h2>Data Flow: Creating a Session</h2>
+<pre>
+1. Developer app calls SDK → createSession(account, policies, ttl)
+2. SDK generates ephemeral keypair (session key)
+3. SDK encodes registerSessionKey() call + policy configurations
+4. SDK wraps everything in a UserOperation → signed by MASTER KEY (one time)
+5. UserOp → Bundler → EntryPoint → Smart Account
+6. Smart Account → SessionKeyValidator.registerSessionKey()
+7. Smart Account → Each Policy.configure()
+8. Session key is now active on-chain
+9. SDK returns ActiveSession to the app (includes session private key)
+</pre>
+
+    <h2>Data Flow: Using a Session Key</h2>
+<pre>
+ 1. App calls SDK → execute(session, target, data)
+ 2. SDK encodes the call into a UserOperation
+ 3. UserOp is signed by the SESSION KEY (not master key!)
+ 4. UserOp → Bundler → EntryPoint → Smart Account
+ 5. Smart Account → SessionKeyValidator.validateSessionKeyOp()
+ 6. Validator → signature recovery → checks time bounds
+ 7. Validator → loops through all attached Policies
+ 8. Each Policy → checkPolicy() → returns allow/deny
+ 9. If all pass → Smart Account.execute() → target contract
+10. After execution → each Policy.updatePolicy() (spending tracking, etc.)
+</pre>
+
+    <h2>Contract Relationships</h2>
+<pre>
+DelegacyFactory
+  └── deploys → DelegacyAccount (one per user, EIP-1167 clones)
+
+DelegacyAccount
+  ├── owner (master key — never leaves user's device)
+  ├── validators[] (installed modules)
+  │    └── SessionKeyValidator
+  │         └── sessions[account][sessionKey] → SessionKeyData
+  │              ├── validAfter / validUntil
+  │              ├── revoked flag
+  │              └── policies[] → array of IPolicy contracts
+  └── execute() / executeBatch()
+
+IPolicy implementations:
+  ├── SpendingLimitPolicy  → maxAmount, spent tracking
+  ├── AllowlistPolicy      → target/selector whitelist
+  ├── RateLimitPolicy      → ops per time window
+  └── GasLimitPolicy       → total gas budget
+</pre>
+
+    <h2>Security Model</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Layer</th>
+          <th>Protection</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Smart Account</td>
+          <td>Only EntryPoint or owner can execute</td>
+        </tr>
+        <tr>
+          <td>Session Validator</td>
+          <td>ECDSA signature verification + time bounds</td>
+        </tr>
+        <tr>
+          <td>Policies</td>
+          <td>On-chain enforced — no server trust required</td>
+        </tr>
+        <tr>
+          <td>EntryPoint</td>
+          <td>Nonce prevents replay attacks</td>
+        </tr>
+        <tr>
+          <td>Paymaster</td>
+          <td>Optional gas sponsorship (doesn't affect custody)</td>
+        </tr>
+        <tr>
+          <td>Master Key</td>
+          <td>Never transmitted — signs only once to install session</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</body>
+</html>
