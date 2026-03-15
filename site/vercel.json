@@ -1,7 +1,7 @@
 {
   "functions": {
-    "api/waitlist.js": {},
-    "api/admin/list.js": {}
+    "api/waitlist.js": { "maxDuration": 10 },
+    "api/admin/list.js": { "maxDuration": 10 }
   },
   "headers": [
     {
