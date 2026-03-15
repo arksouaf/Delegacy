@@ -1,6 +1,22 @@
-import Redis from 'ioredis';
+function parseRedisUrl(url) {
+  if (!url) return null;
+  try {
+    const u = new URL(url);
+    return { baseUrl: `https://${u.hostname}`, token: decodeURIComponent(u.password) };
+  } catch {
+    return null;
+  }
+}
 
-const redis = new Redis(process.env.REDIS_URL, { tls: {}, maxRetriesPerRequest: 3 });
+async function redisCmd(baseUrl, token, ...parts) {
+  const path = parts.map(p => encodeURIComponent(String(p))).join('/');
+  const res = await fetch(`${baseUrl}/${path}`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) throw new Error(`Redis error: ${res.status}`);
+  return res.json();
+}
 
 export default async function handler(req, res) {
   if (req.method !== 'GET') {
@@ -11,13 +27,22 @@ export default async function handler(req, res) {
     return res.status(401).json({ error: 'Unauthorized' });
   }
 
+  const cfg = parseRedisUrl(process.env.REDIS_URL);
+  if (!cfg) return res.status(500).json({ error: 'Redis not configured' });
+
   try {
-    const emails = await redis.smembers('waitlist');
-    const metaRaw = await redis.hgetall('waitlist_meta') ?? {};
+    const { result: emails } = await redisCmd(cfg.baseUrl, cfg.token, 'smembers', 'waitlist');
+    const { result: metaFlat } = await redisCmd(cfg.baseUrl, cfg.token, 'hgetall', 'waitlist_meta');
+
+    // hgetall returns [field, value, field, value, ...]
+    const meta = {};
+    if (Array.isArray(metaFlat)) {
+      for (let i = 0; i < metaFlat.length; i += 2) meta[metaFlat[i]] = metaFlat[i + 1];
+    }
 
     const waitlist = (emails ?? []).map((email) => ({
       email,
-      signedUpAt: metaRaw[email] ? new Date(Number(metaRaw[email])).toISOString() : null,
+      signedUpAt: meta[email] ? new Date(Number(meta[email])).toISOString() : null,
     })).sort((a, b) => (a.signedUpAt > b.signedUpAt ? -1 : 1));
 
     return res.status(200).json({ total: waitlist.length, waitlist });

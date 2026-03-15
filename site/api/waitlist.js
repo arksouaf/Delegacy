@@ -1,6 +1,23 @@
-import Redis from 'ioredis';
+// Parses rediss://default:TOKEN@hostname:port → { baseUrl, token }
+function parseRedisUrl(url) {
+  if (!url) return null;
+  try {
+    const u = new URL(url);
+    return { baseUrl: `https://${u.hostname}`, token: decodeURIComponent(u.password) };
+  } catch {
+    return null;
+  }
+}
 
-const redis = new Redis(process.env.REDIS_URL, { tls: {}, maxRetriesPerRequest: 3 });
+async function redisCmd(baseUrl, token, ...parts) {
+  const path = parts.map(p => encodeURIComponent(String(p))).join('/');
+  const res = await fetch(`${baseUrl}/${path}`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) throw new Error(`Redis error: ${res.status}`);
+  return res.json();
+}
 
 function isValidEmail(email) {
   return typeof email === 'string' &&
@@ -24,17 +41,22 @@ export default async function handler(req, res) {
 
   const normalizedEmail = email.trim().toLowerCase();
 
+  const cfg = parseRedisUrl(process.env.REDIS_URL);
+  if (!cfg) {
+    console.error('[waitlist] REDIS_URL not set or invalid');
+    return res.status(500).json({ error: 'Could not save your signup. Please try again.' });
+  }
+
   try {
-    // SADD returns 1 if added, 0 if already a member — built-in dedup
-    const added = await redis.sadd('waitlist', normalizedEmail);
+    // SADD returns 1 if new, 0 if duplicate
+    const { result: added } = await redisCmd(cfg.baseUrl, cfg.token, 'sadd', 'waitlist', normalizedEmail);
 
     if (added === 0) {
-      // Already signed up — return success silently
       return res.status(200).json({ ok: true, message: 'Signed up!' });
     }
 
-    // Store signup timestamp keyed by email
-    await redis.hset('waitlist_meta', normalizedEmail, Date.now());
+    // Store signup timestamp
+    await redisCmd(cfg.baseUrl, cfg.token, 'hset', 'waitlist_meta', normalizedEmail, Date.now());
 
     return res.status(200).json({ ok: true, message: 'Signed up!' });
 

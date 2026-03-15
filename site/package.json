@@ -6,7 +6,5 @@
   "engines": {
     "node": "20.x"
   },
-  "dependencies": {
-    "ioredis": "^5.4.1"
-  }
+  "dependencies": {}
 }
