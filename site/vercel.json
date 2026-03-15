@@ -1,4 +1,8 @@
 {
+  "functions": {
+    "api/waitlist.js": {},
+    "api/admin/list.js": {}
+  },
   "headers": [
     {
       "source": "/api/(.*)",
