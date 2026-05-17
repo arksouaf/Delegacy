@@ -89,6 +89,18 @@
       border: 1px solid var(--border2);
     }
     .btn-ghost:hover { color: var(--text); border-color: var(--blue-mid); }
+    /* GitHub coming-soon toast */
+    #gh-toast {
+      position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%) translateY(12px);
+      background: #161b22; border: 1px solid #30363d;
+      color: #e6edf3; padding: .65rem 1.25rem;
+      border-radius: 10px; font-size: .88rem; font-weight: 500;
+      box-shadow: 0 8px 32px rgba(0,0,0,.55);
+      opacity: 0; pointer-events: none;
+      transition: opacity .22s ease, transform .22s ease;
+      z-index: 9999; white-space: nowrap;
+    }
+    #gh-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
     .btn-primary {
       background: linear-gradient(135deg, var(--blue-mid), var(--cyan));
       color: #fff;
@@ -663,7 +675,7 @@
       <li><a href="docs/solana-architecture.html">Docs ↗</a></li>
     </ul>
     <div class="nav-right">
-      <a href="https://github.com" class="btn btn-ghost" target="_blank" rel="noopener">GitHub</a>
+      <button class="btn btn-ghost" onclick="showGhToast()">GitHub</button>
       <a href="#waitlist" class="btn btn-primary">Get API Key →</a>
     </div>
   </div>
@@ -1736,6 +1748,17 @@ console.<span class="fn">log</span>(<span class="str">'Sig:'</span>, result.sign
     });
   }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
   animEls.forEach(function(el) { animObs.observe(el); });
+</script>
+
+<div id="gh-toast">🚀 GitHub repo coming very soon — stay tuned!</div>
+<script>
+  var _ghTimer;
+  function showGhToast() {
+    var t = document.getElementById('gh-toast');
+    t.classList.add('show');
+    clearTimeout(_ghTimer);
+    _ghTimer = setTimeout(function() { t.classList.remove('show'); }, 3000);
+  }
 </script>
 </body>
 </html>
