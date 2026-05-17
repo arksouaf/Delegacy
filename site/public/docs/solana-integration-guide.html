@@ -38,10 +38,17 @@
       flex-wrap: wrap;
     }
     nav .logo {
-      text-decoration: none;
-      display: flex; align-items: center;
-    
-    nav .sep { color: var(--border); font-size: 1.2rem; user-select: none; }
+      text-decoration: none; display: block; overflow: hidden; width: 180px; height: 36px;
+    }
+    nav .logo img {
+      display: block; width: 210px; height: auto; margin-left: -15px; margin-top: -30px;
+    }
+    nav .logo img {
+      display: block;
+      width: 210px; height: auto;
+      margin-left: -15px;
+      margin-top: -30px;
+    }
     nav .chain-label {
       font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em;
       padding: 0.15rem 0.5rem; border-radius: 4px; font-weight: 700;
@@ -99,7 +106,7 @@
 </head>
 <body>
   <nav>
-    <a href="../index.html" class="logo"><img src="../logo.png" alt="SessionGuard" style="height:30px;width:auto" /></a>
+    <a href="../index.html" class="logo"><img src="../logo.png" alt="SessionGuard" /></a>
     <span class="chain-label evm">EVM</span>
     <a href="architecture.html">Architecture</a>
     <a href="integration-guide.html">Integration</a>

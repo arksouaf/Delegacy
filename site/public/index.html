@@ -120,11 +120,16 @@
       height: 64px; padding: 0 1.5rem; gap: 2rem;
     }
     .nav-logo {
-      display: flex; align-items: center; flex-shrink: 0;
+      display: block; flex-shrink: 0;
       text-decoration: none;
+      width: 220px; height: 44px;
+      overflow: hidden;
     }
     .nav-logo img {
-      height: 36px; width: auto; display: block;
+      display: block;
+      width: 256px; height: auto;
+      margin-left: -18px;
+      margin-top: -37px;
     }
     .nav-links {
       display: flex; gap: 1.75rem; list-style: none; flex: 1;
@@ -1561,7 +1566,7 @@ console.<span class="fn">log</span>(<span class="str">'Sig:'</span>, result.sign
     <div class="footer-top">
       <div>
         <a href="#" class="nav-logo">
-          <img src="logo.png" alt="SessionGuard" style="height:32px;width:auto" />
+          <img src="logo.png" alt="SessionGuard" />
         </a>
         <p class="footer-desc">
           Session key wallet infrastructure for Web3. Build frictionless apps without compromising user custody.
