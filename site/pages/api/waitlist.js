@@ -19,17 +19,18 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'A valid email address is required.' });
   }
 
-  const { REDIS_URL } = process.env;
-  if (!REDIS_URL) return res.status(500).json({ error: 'REDIS_URL not configured.' });
+  const redisUrl = process.env.KV_URL || process.env.REDIS_URL;
+  if (!redisUrl) return res.status(500).json({ error: 'No Redis URL configured.' });
 
   const normalizedEmail = email.trim().toLowerCase();
 
-  const redis = new Redis(REDIS_URL, {
+  const redis = new Redis(redisUrl, {
     maxRetriesPerRequest: 1,
     connectTimeout: 5000,
     lazyConnect: true,
+    tls: redisUrl.startsWith('rediss://') ? {} : undefined,
   });
-  redis.on('error', () => {}); // prevent unhandled-error crash in serverless
+  redis.on('error', () => {});
 
   try {
     await redis.connect();

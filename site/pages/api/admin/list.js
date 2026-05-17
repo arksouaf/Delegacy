@@ -1,9 +1,14 @@
 import Redis from 'ioredis';
 
 function makeRedis() {
-  const { REDIS_URL } = process.env;
-  if (!REDIS_URL) throw new Error('REDIS_URL not configured');
-  const client = new Redis(REDIS_URL, { maxRetriesPerRequest: 1, connectTimeout: 5000, lazyConnect: true });
+  const redisUrl = process.env.KV_URL || process.env.REDIS_URL;
+  if (!redisUrl) throw new Error('No Redis URL configured');
+  const client = new Redis(redisUrl, {
+    maxRetriesPerRequest: 1,
+    connectTimeout: 5000,
+    lazyConnect: true,
+    tls: redisUrl.startsWith('rediss://') ? {} : undefined,
+  });
   client.on('error', () => {});
   return client;
 }
