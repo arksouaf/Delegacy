@@ -107,7 +107,19 @@
       font-weight: 600;
       margin-bottom: 1.5rem;
     }
-  </style>
+      .dev-notice {
+      background: rgba(210,153,34,0.08);
+      border-bottom: 1px solid rgba(210,153,34,0.30);
+      color: #c9a227;
+      text-align: center;
+      padding: 0.55rem 1.5rem;
+      font-size: 0.82rem;
+      font-weight: 500;
+      letter-spacing: 0.01em;
+    }
+    .dev-notice strong { color: #e3b341; }
+    .dev-notice code { background: rgba(210,153,34,0.15); color: #e3b341; padding: 0.1em 0.4em; border-radius: 4px; font-size: 0.9em; }
+    .dev-notice a { color: #e3b341; text-underline-offset: 3px; }  </style>
 </head>
 <body>
   <nav>
@@ -122,6 +134,7 @@
     <a href="solana-integration-guide.html">Integration</a>
     <a href="solana-use-cases.html">Use Cases</a>
   </nav>
+  <div class="dev-notice">&#9888;&#xFE0F; <strong>Not yet on npm.</strong> <code>@sessionguard/sdk</code> &amp; <code>@sessionguard/solana-sdk</code> are under active development and testing &mdash; packages are not published yet. <a href="../index.html#waitlist">Join the waitlist</a> to be notified at launch.</div>
 
   <div class="container">
     <span class="badge">Technical Reference</span>
