@@ -1,10 +1,12 @@
-import { Redis } from '@upstash/redis';
+import Redis from 'ioredis';
 
+let _redis;
 function getRedis() {
+  if (_redis) return _redis;
   const { REDIS_URL } = process.env;
   if (!REDIS_URL) throw new Error('REDIS_URL not set');
-  const u = new URL(REDIS_URL);
-  return new Redis({ url: `https://${u.hostname}`, token: decodeURIComponent(u.password) });
+  _redis = new Redis(REDIS_URL, { maxRetriesPerRequest: 2, connectTimeout: 5000 });
+  return _redis;
 }
 
 export default async function handler(req, res) {
