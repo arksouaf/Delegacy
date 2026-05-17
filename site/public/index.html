@@ -307,17 +307,24 @@
     }
     .token-addr-value {
       font-family: 'Space Mono', 'Courier New', monospace;
-      font-size: .82rem; color: var(--text-muted);
+      font-size: .82rem; color: var(--text-dim);
       letter-spacing: .04em; white-space: nowrap;
+      max-width: 38ch; overflow: hidden; text-overflow: ellipsis;
+      text-decoration: none;
     }
-    .token-soon-badge {
+    .token-addr-value:hover { color: var(--blue); }
+    @media (max-width: 640px) { .token-addr-value { max-width: 18ch; } }
+    .token-copy-btn {
       display: inline-flex; align-items: center; gap: .3rem;
-      background: linear-gradient(135deg,rgba(14,165,233,.14),rgba(34,211,238,.14));
-      border: 1px solid rgba(14,165,233,.4);
-      color: var(--blue); font-size: .7rem; font-weight: 700;
-      padding: .25rem .7rem; border-radius: 999px;
-      letter-spacing: .07em; text-transform: uppercase; white-space: nowrap;
+      background: rgba(255,255,255,.05); border: 1px solid var(--border2);
+      color: var(--text-dim); font-size: .7rem; font-weight: 600;
+      padding: .22rem .65rem; border-radius: 6px;
+      cursor: pointer; letter-spacing: .04em; white-space: nowrap;
+      font-family: 'Inter', sans-serif;
+      transition: background .15s, color .15s, border-color .15s;
     }
+    .token-copy-btn:hover { background: rgba(255,255,255,.1); color: var(--text); border-color: var(--blue-mid); }
+    .token-copy-btn.copied { color: #4ade80; border-color: rgba(74,222,128,.4); background: rgba(74,222,128,.07); }
     @media (max-width: 640px) {
       .token-strip-inner { justify-content: center; text-align: center; }
       .token-meta { justify-content: center; }
@@ -852,8 +859,11 @@
       <div class="token-addr-row">
         <span class="token-addr-label">CA</span>
         <span class="token-addr-divider"></span>
-        <span class="token-addr-value">Announcing at launch &mdash; address TBA</span>
-        <span class="token-soon-badge">⏳ Coming Soon</span>
+        <a class="token-addr-value" href="https://solscan.io/token/8ENEmKwb8k86aotVRXioD1cZQKJsMRvak3tKfvgy9x9c" target="_blank" rel="noopener" title="View on Solscan">8ENEmKwb8k86aotVRXioD1cZQKJsMRvak3tKfvgy9x9c</a>
+        <button class="token-copy-btn" onclick="copyCA(this)" title="Copy contract address">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          Copy
+        </button>
       </div>
     </div>
   </div>
@@ -1838,6 +1848,16 @@ console.<span class="fn">log</span>(<span class="str">'Sig:'</span>, result.sign
     t.classList.add('show');
     clearTimeout(_ghTimer);
     _ghTimer = setTimeout(function() { t.classList.remove('show'); }, 3000);
+  }
+  function copyCA(btn) {
+    navigator.clipboard.writeText('8ENEmKwb8k86aotVRXioD1cZQKJsMRvak3tKfvgy9x9c').then(function() {
+      btn.classList.add('copied');
+      btn.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Copied!';
+      setTimeout(function() {
+        btn.classList.remove('copied');
+        btn.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Copy';
+      }, 2000);
+    });
   }
 </script>
 </body>
