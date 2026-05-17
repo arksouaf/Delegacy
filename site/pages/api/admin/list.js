@@ -1,17 +1,9 @@
-import Redis from 'ioredis';
+import { Redis } from '@upstash/redis';
 
-function makeRedis() {
-  const redisUrl = process.env.KV_URL || process.env.REDIS_URL;
-  if (!redisUrl) throw new Error('No Redis URL configured');
-  const client = new Redis(redisUrl, {
-    maxRetriesPerRequest: 1,
-    connectTimeout: 5000,
-    lazyConnect: true,
-    tls: redisUrl.startsWith('rediss://') ? {} : undefined,
-  });
-  client.on('error', () => {});
-  return client;
-}
+const redis = new Redis({
+  url: process.env.KV_REST_API_URL,
+  token: process.env.KV_REST_API_TOKEN,
+});
 
 export default async function handler(req, res) {
   if (req.method !== 'GET') return res.status(405).json({ error: 'Method not allowed' });
@@ -21,11 +13,8 @@ export default async function handler(req, res) {
   }
 
   try {
-    const redis = makeRedis();
-    await redis.connect();
     const emails = (await redis.smembers('waitlist')) ?? [];
     const meta   = (await redis.hgetall('waitlist_meta')) ?? {};
-    redis.disconnect();
 
     const waitlist = emails.map((email) => ({
       email,

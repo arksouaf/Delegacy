@@ -1,4 +1,9 @@
-import Redis from 'ioredis';
+import { Redis } from '@upstash/redis';
+
+const redis = new Redis({
+  url: process.env.KV_REST_API_URL,
+  token: process.env.KV_REST_API_TOKEN,
+});
 
 function isValidEmail(email) {
   return typeof email === 'string' &&
@@ -19,30 +24,16 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'A valid email address is required.' });
   }
 
-  const redisUrl = process.env.KV_URL || process.env.REDIS_URL;
-  if (!redisUrl) return res.status(500).json({ error: 'No Redis URL configured.' });
-
   const normalizedEmail = email.trim().toLowerCase();
 
-  const redis = new Redis(redisUrl, {
-    maxRetriesPerRequest: 1,
-    connectTimeout: 5000,
-    lazyConnect: true,
-    tls: redisUrl.startsWith('rediss://') ? {} : undefined,
-  });
-  redis.on('error', () => {});
-
   try {
-    await redis.connect();
     const added = await redis.sadd('waitlist', normalizedEmail);
     if (added > 0) {
-      await redis.hset('waitlist_meta', normalizedEmail, String(Date.now()));
+      await redis.hset('waitlist_meta', { [normalizedEmail]: Date.now() });
     }
     return res.status(200).json({ ok: true, message: 'Signed up!' });
   } catch (err) {
     console.error('[waitlist]', err.message);
     return res.status(500).json({ error: err.message });
-  } finally {
-    redis.disconnect();
   }
 }
