@@ -120,16 +120,20 @@
       height: 64px; padding: 0 1.5rem; gap: 2rem;
     }
     .nav-logo {
-      display: block; flex-shrink: 0;
+      display: flex; align-items: center; gap: 10px; flex-shrink: 0;
       text-decoration: none;
-      width: 220px; height: 44px;
-      overflow: hidden;
     }
     .nav-logo img {
-      display: block;
-      width: 230px; height: auto;
-      margin-left: -5px;
-      margin-top: -43px;
+      height: 34px; width: auto; display: block;
+    }
+    .nav-logo-text {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.15rem; font-weight: 400;
+      letter-spacing: -0.02em;
+      color: rgba(255,255,255,0.80);
+    }
+    .nav-logo-text strong {
+      color: #ffffff; font-weight: 700;
     }
     .nav-links {
       display: flex; gap: 1.75rem; list-style: none; flex: 1;
@@ -647,7 +651,8 @@
 <nav id="navbar">
   <div class="nav-inner">
     <a href="#" class="nav-logo">
-      <img src="logo.png" alt="SessionGuard" />
+      <img src="shield.png" alt="SessionGuard" />
+      <span class="nav-logo-text">Session<strong>Guard</strong></span>
     </a>
     <ul class="nav-links">
       <li><a href="#how-it-works">How It Works</a></li>
@@ -1566,7 +1571,8 @@ console.<span class="fn">log</span>(<span class="str">'Sig:'</span>, result.sign
     <div class="footer-top">
       <div>
         <a href="#" class="nav-logo">
-          <img src="logo.png" alt="SessionGuard" />
+          <img src="shield.png" alt="SessionGuard" />
+          <span class="nav-logo-text">Session<strong>Guard</strong></span>
         </a>
         <p class="footer-desc">
           Session key wallet infrastructure for Web3. Build frictionless apps without compromising user custody.

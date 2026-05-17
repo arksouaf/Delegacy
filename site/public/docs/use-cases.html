@@ -37,12 +37,12 @@
       gap: 2rem;
       z-index: 100;
     }
-    nav .logo {
-      text-decoration: none; display: block; overflow: hidden; width: 180px; height: 36px;
-    }
-    nav .logo img {
-      display: block; width: 185px; height: auto; margin-left: -4px; margin-top: -35px;
-    }
+    nav .logo { text-decoration: none; display: flex; align-items: center; gap: 8px; }
+    nav .logo img { height: 28px; width: auto; display: block; }
+    nav .logo-text { font-size: 1rem; font-weight: 400; letter-spacing: -0.02em; color: rgba(255,255,255,0.80); }
+    nav .logo-text strong { color: #fff; font-weight: 700; }
+    nav .logo-text { font-size: 1rem; font-weight: 400; letter-spacing: -0.02em; color: rgba(255,255,255,0.80); }
+    nav .logo-text strong { color: #fff; font-weight: 700; }
     nav .logo img {
       display: block;
       width: 210px; height: auto;
@@ -169,7 +169,7 @@
 </head>
 <body>
   <nav>
-    <a href="../index.html" class="logo"><img src="../logo.png" alt="SessionGuard" /></a>
+    <a href="../index.html" class="logo"><img src="../shield.png" alt="" /><span class="logo-text">Session<strong>Guard</strong></span></a>
     <span style="font-size:0.7rem;text-transform:uppercase;letter-spacing:0.08em;padding:0.15rem 0.5rem;border-radius:4px;font-weight:700;background:#3fb95022;color:#3fb950">EVM</span>
     <a href="architecture.html">Architecture</a>
     <a href="integration-guide.html">Integration</a>
