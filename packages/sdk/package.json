@@ -1,7 +1,7 @@
 {
-  "name": "@delegacy/sdk",
+  "name": "@sessionguard/sdk",
   "version": "0.1.0",
-  "description": "TypeScript SDK for integrating Delegacy session key wallets",
+  "description": "TypeScript SDK for integrating SessionGuard session key wallets",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "license": "MIT",

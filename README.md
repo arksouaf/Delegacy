@@ -1,4 +1,4 @@
-# Delegacy
+# SessionGuard
 
 > **Session Key Wallet Infrastructure — as a Service**
 >
@@ -7,9 +7,9 @@
 
 ---
 
-## What is Delegacy?
+## What is SessionGuard?
 
-Delegacy is a B2B infrastructure platform that lets developers integrate **self-custodial smart wallets with session keys** into any application — games, DeFi, commerce, enterprise, and more.
+SessionGuard is a B2B infrastructure platform that lets developers integrate **self-custodial smart wallets with session keys** into any application — games, DeFi, commerce, enterprise, and more.
 
 Your users sign once to create a scoped, time-limited session key. From that point on, your app runs frictionlessly — no wallet popups, no gas confusion — while the user's master key stays safely in their control.
 
@@ -17,7 +17,7 @@ Your users sign once to create a scoped, time-limited session key. From that poi
 
 ```
 ┌──────────────────────────────────────────────────────────────┐
-│                     Delegacy Platform                     │
+│                   SessionGuard Platform                    │
 ├──────────────┬──────────────┬────────────────────────────────┤
 │  Contracts   │   SDK        │   API Service                  │
 │  (Solidity)  │  (TypeScript)│   (REST + WebSocket)           │
@@ -34,9 +34,9 @@ Your users sign once to create a scoped, time-limited session key. From that poi
 
 | Package | Path | Description |
 |---------|------|-------------|
-| `@delegacy/contracts` | `packages/contracts` | Solidity smart contracts (ERC-4337 account, validators, policies) |
-| `@delegacy/sdk` | `packages/sdk` | TypeScript SDK for developers to integrate session keys |
-| `@delegacy/api` | `packages/api` | Backend API service (session mgmt, bundler relay, paymaster) |
+| `@sessionguard/contracts` | `packages/contracts` | Solidity smart contracts (ERC-4337 account, validators, policies) |
+| `@sessionguard/sdk` | `packages/sdk` | TypeScript SDK for developers to integrate session keys |
+| `@sessionguard/api` | `packages/api` | Backend API service (session mgmt, bundler relay, paymaster) |
 
 ## Use Cases
 
@@ -59,19 +59,19 @@ pnpm build
 pnpm test
 
 # Deploy contracts (local)
-pnpm --filter @delegacy/contracts deploy:local
+pnpm --filter @sessionguard/contracts deploy:local
 ```
 
 ## SDK Usage (30-second example)
 
 ```typescript
-import { DelegacyClient, SpendingLimitPolicy } from '@delegacy/sdk';
+import { SessionGuardClient, SpendingLimitPolicy } from '@sessionguard/sdk';
 
 // 1. Initialize client
-const client = new DelegacyClient({
+const client = new SessionGuardClient({
   chainId: 1,
-  bundlerUrl: 'https://bundler.delegacy.io',
-  paymasterUrl: 'https://paymaster.delegacy.io',
+  bundlerUrl: 'https://bundler.sessionguard.io',
+  paymasterUrl: 'https://paymaster.sessionguard.io',
 });
 
 // 2. Create or connect a smart account
@@ -104,7 +104,7 @@ foundry (for Solidity)
 
 # Setup
 git clone <repo>
-cd Delegacy
+cd SessionGuard
 pnpm install
 
 # Contracts

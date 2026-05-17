@@ -1,9 +1,9 @@
 {
-  "name": "delegacy",
+  "name": "sessionguard",
   "version": "0.1.0",
   "private": true,
   "description": "Session Key Wallet Infrastructure — as a Service. ERC-4337 + Solana powered.",
-  "author": "delegacy",
+  "author": "sessionguard",
   "license": "MIT",
   "workspaces": [
     "packages/*"

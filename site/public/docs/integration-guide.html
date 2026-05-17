@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Integration Guide — Delegacy</title>
+  <title>Integration Guide — SessionGuard</title>
   <style>
     :root {
       --bg: #0d1117;
@@ -180,7 +180,7 @@
 </head>
 <body>
   <nav>
-    <a href="../index.html" class="logo">Delegacy</a>
+    <a href="../index.html" class="logo">SessionGuard</a>
     <span style="font-size:0.7rem;text-transform:uppercase;letter-spacing:0.08em;padding:0.15rem 0.5rem;border-radius:4px;font-weight:700;background:#3fb95022;color:#3fb950">EVM</span>
     <a href="architecture.html">Architecture</a>
     <a href="integration-guide.html" class="active">Integration</a>
@@ -198,27 +198,27 @@
     <p class="subtitle">Quick Start — 5 Minutes to Session Keys</p>
 
     <h3><span class="step-num">1</span> Install the SDK</h3>
-<pre><span class="lang-tag">bash</span><code>npm install @delegacy/sdk
+<pre><span class="lang-tag">bash</span><code>npm install @sessionguard/sdk
 <span class="cmt"># or</span>
-pnpm add @delegacy/sdk
+pnpm add @sessionguard/sdk
 <span class="cmt"># or</span>
-yarn add @delegacy/sdk</code></pre>
+yarn add @sessionguard/sdk</code></pre>
 
     <h3><span class="step-num">2</span> Get API Credentials</h3>
-    <p>Sign up at <a href="https://Delegacy.io">Delegacy.io</a> and get your API key:</p>
+    <p>Sign up at <a href="https://sessionguard.io">sessionguard.io</a> and get your API key:</p>
     <ul>
       <li><code>sg_test_xxx</code> for testnets (Sepolia, Base Goerli)</li>
       <li><code>sg_live_xxx</code> for production (Ethereum, Polygon, Base, Arbitrum, Optimism)</li>
     </ul>
 
     <h3><span class="step-num">3</span> Initialize the Client</h3>
-<pre><span class="lang-tag">typescript</span><code><span class="kw">import</span> { <span class="type">DelegacyClient</span> } <span class="kw">from</span> <span class="str">'@delegacy/sdk'</span>;
+<pre><span class="lang-tag">typescript</span><code><span class="kw">import</span> { <span class="type">SessionGuardClient</span> } <span class="kw">from</span> <span class="str">'@sessionguard/sdk'</span>;
 
-<span class="kw">const</span> client = <span class="kw">new</span> <span class="type">DelegacyClient</span>({
+<span class="kw">const</span> client = <span class="kw">new</span> <span class="type">SessionGuardClient</span>({
   <span class="prop">chainId</span>: <span class="num">8453</span>,  <span class="cmt">// Base</span>
   <span class="prop">rpcUrl</span>: <span class="str">'https://mainnet.base.org'</span>,
-  <span class="prop">bundlerUrl</span>: <span class="str">'https://bundler.delegacy.io/base'</span>,
-  <span class="prop">paymasterUrl</span>: <span class="str">'https://paymaster.delegacy.io/base'</span>, <span class="cmt">// optional: sponsor gas</span>
+  <span class="prop">bundlerUrl</span>: <span class="str">'https://bundler.sessionguard.io/base'</span>,
+  <span class="prop">paymasterUrl</span>: <span class="str">'https://paymaster.sessionguard.io/base'</span>, <span class="cmt">// optional: sponsor gas</span>
 });</code></pre>
 
     <h3><span class="step-num">4</span> Create a Smart Account for Your User</h3>
@@ -230,7 +230,7 @@ yarn add @delegacy/sdk</code></pre>
 console.<span class="fn">log</span>(<span class="str">'Smart Account:'</span>, account);</code></pre>
 
     <h3><span class="step-num">5</span> Create a Session Key</h3>
-<pre><span class="lang-tag">typescript</span><code><span class="kw">import</span> { <span class="type">AllowlistPolicy</span>, <span class="type">SpendingLimitPolicy</span> } <span class="kw">from</span> <span class="str">'@delegacy/sdk'</span>;
+<pre><span class="lang-tag">typescript</span><code><span class="kw">import</span> { <span class="type">AllowlistPolicy</span>, <span class="type">SpendingLimitPolicy</span> } <span class="kw">from</span> <span class="str">'@sessionguard/sdk'</span>;
 
 <span class="cmt">// This is the ONE TIME the user's master key signs</span>
 <span class="kw">const</span> session = <span class="kw">await</span> client.<span class="fn">createSession</span>({

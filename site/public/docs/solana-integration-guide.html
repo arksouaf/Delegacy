@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Solana Integration Guide — Delegacy</title>
+  <title>Solana Integration Guide — SessionGuard</title>
   <style>
     :root {
       --bg: #0d1117;
@@ -96,7 +96,7 @@
 </head>
 <body>
   <nav>
-    <a href="../index.html" class="logo">Delegacy</a>
+    <a href="../index.html" class="logo">SessionGuard</a>
     <span class="chain-label evm">EVM</span>
     <a href="architecture.html">Architecture</a>
     <a href="integration-guide.html">Integration</a>
@@ -116,14 +116,14 @@
 
     <h3><span class="step-num">1</span> Install the SDK</h3>
 <pre><span class="lang-tag">bash</span>
-npm install @delegacy/solana-sdk
+npm install @sessionguard/solana-sdk
 <span class="cm"># or</span>
-pnpm add @delegacy/solana-sdk
+pnpm add @sessionguard/solana-sdk
 <span class="cm"># or</span>
-yarn add @delegacy/solana-sdk</pre>
+yarn add @sessionguard/solana-sdk</pre>
 
     <h3><span class="step-num">2</span> Get API Credentials</h3>
-    <p>Sign up at <a href="https://Delegacy.io" style="color:var(--accent)">Delegacy.io</a> and get your API key:</p>
+    <p>Sign up at <a href="https://sessionguard.io" style="color:var(--accent)">sessionguard.io</a> and get your API key:</p>
     <ul style="margin:0.5rem 0 0.5rem 1.5rem;color:var(--text-muted)">
       <li><code>sg_test_xxx</code> for devnet / testnet</li>
       <li><code>sg_live_xxx</code> for mainnet-beta</li>
@@ -131,9 +131,9 @@ yarn add @delegacy/solana-sdk</pre>
 
     <h3><span class="step-num">3</span> Initialize the Client</h3>
 <pre><span class="lang-tag">typescript</span>
-<span class="kw">import</span> { <span class="typ">SolanaDelegacyClient</span> } <span class="kw">from</span> <span class="str">'@delegacy/solana-sdk'</span>;
+<span class="kw">import</span> { <span class="typ">SolanaSessionGuardClient</span> } <span class="kw">from</span> <span class="str">'@sessionguard/solana-sdk'</span>;
 
-<span class="kw">const</span> client = <span class="kw">new</span> <span class="fn">SolanaDelegacyClient</span>({
+<span class="kw">const</span> client = <span class="kw">new</span> <span class="fn">SolanaSessionGuardClient</span>({
   cluster: <span class="str">'mainnet-beta'</span>,
   rpcUrl:  <span class="str">'https://api.mainnet-beta.solana.com'</span>,
 });</pre>
@@ -151,7 +151,7 @@ console.<span class="fn">log</span>(<span class="str">'Guard Account PDA:'</span
 
     <h3><span class="step-num">5</span> Create a Session Key</h3>
 <pre><span class="lang-tag">typescript</span>
-<span class="kw">import</span> { <span class="fn">AllowlistPolicy</span>, <span class="fn">SpendingLimitPolicy</span> } <span class="kw">from</span> <span class="str">'@delegacy/solana-sdk'</span>;
+<span class="kw">import</span> { <span class="fn">AllowlistPolicy</span>, <span class="fn">SpendingLimitPolicy</span> } <span class="kw">from</span> <span class="str">'@sessionguard/solana-sdk'</span>;
 
 <span class="cm">// ONE TIME owner signature</span>
 <span class="kw">const</span> session = <span class="kw">await</span> client.<span class="fn">createSession</span>({
@@ -328,7 +328,7 @@ Content-Type: application/json
     <table>
       <thead><tr><th>EVM Concept</th><th>Solana Equivalent</th></tr></thead>
       <tbody>
-        <tr><td><code>DelegacyClient</code></td><td><code>SolanaDelegacyClient</code></td></tr>
+        <tr><td><code>SessionGuardClient</code></td><td><code>SolanaSessionGuardClient</code></td></tr>
         <tr><td><code>createAccount({ owner })</code></td><td><code>initializeAccount(ownerKeypair)</code></td></tr>
         <tr><td><code>0x...</code> addresses</td><td>Base58 public keys</td></tr>
         <tr><td><code>chainId: 8453</code></td><td><code>cluster: 'mainnet-beta'</code></td></tr>

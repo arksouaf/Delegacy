@@ -1,11 +1,11 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Delegacy — Session Key Infrastructure for Web3</title>
+  <title>SessionGuard — Session Key Infrastructure for Web3</title>
   <meta name="description" content="The B2B infrastructure platform for session key wallets. Sign once, transact forever — on-chain enforced policies across EVM and Solana." />
-  <meta property="og:title"       content="Delegacy — Session Key Infrastructure" />
+  <meta property="og:title"       content="SessionGuard — Session Key Infrastructure" />
   <meta property="og:description" content="Sign once. Transact forever. On-chain enforced policies on EVM + Solana." />
   <meta property="og:type"        content="website" />
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔑</text></svg>" />
@@ -649,7 +649,7 @@
   <div class="nav-inner">
     <a href="#" class="nav-logo">
       <span class="logo-icon">🔑</span>
-      Delegacy
+      SessionGuard
     </a>
     <ul class="nav-links">
       <li><a href="#how-it-works">How It Works</a></li>
@@ -710,11 +710,11 @@
             <div class="dot d-g"></div>
             <span class="code-fname">game-session.ts</span>
           </div>
-          <div class="code-body"><span class="cm">// 1. pnpm add @delegacy/sdk</span>
-<span class="kw">import</span> { <span class="typ">DelegacyClient</span>, <span class="fn">AllowlistPolicy</span>,
-         <span class="fn">SpendingLimitPolicy</span> } <span class="kw">from</span> <span class="str">'@delegacy/sdk'</span>;
+          <div class="code-body"><span class="cm">// 1. pnpm add @sessionguard/sdk</span>
+<span class="kw">import</span> { <span class="typ">SessionGuardClient</span>, <span class="fn">AllowlistPolicy</span>,
+         <span class="fn">SpendingLimitPolicy</span> } <span class="kw">from</span> <span class="str">'@sessionguard/sdk'</span>;
 
-<span class="kw">const</span> client <span class="op">=</span> <span class="kw">new</span> <span class="fn">DelegacyClient</span>({ chainId: <span class="num">8453</span> });
+<span class="kw">const</span> client <span class="op">=</span> <span class="kw">new</span> <span class="fn">SessionGuardClient</span>({ chainId: <span class="num">8453</span> });
 <span class="kw">const</span> account <span class="op">=</span> <span class="kw">await</span> client.<span class="fn">createAccount</span>({ owner: userWallet });
 
 <span class="cm">// 2. User signs ONCE — that's it</span>
@@ -772,12 +772,12 @@
     <div class="section-hdr">
       <div class="section-tag">The Problem</div>
       <h2 class="section-title">Web3 UX is <span class="grad">broken</span>. We fix it.</h2>
-      <p class="section-sub">Every wallet popup is a lost transaction. Delegacy eliminates the friction without compromising custody.</p>
+      <p class="section-sub">Every wallet popup is a lost transaction. SessionGuard eliminates the friction without compromising custody.</p>
     </div>
     <div class="compare">
       <div class="cmp-card bad">
         <div class="cmp-head">
-          <span>❌</span> Without Delegacy
+          <span>❌</span> Without SessionGuard
         </div>
         <div class="cmp-row"><span class="ci">🚨</span><span>Wallet popup on <em>every single</em> transaction — users abandon your app</span></div>
         <div class="cmp-row"><span class="ci">🔓</span><span>To automate, devs store private keys server-side — catastrophic if breached</span></div>
@@ -787,7 +787,7 @@
       </div>
       <div class="cmp-card good">
         <div class="cmp-head">
-          <span>✅</span> With Delegacy
+          <span>✅</span> With SessionGuard
         </div>
         <div class="cmp-row"><span class="ci">🎯</span><span>User signs once — plays, trades, shops for hours without seeing a popup</span></div>
         <div class="cmp-row"><span class="ci">🔒</span><span>Session keys are scoped, time-limited, and can't exceed on-chain policy limits</span></div>
@@ -807,14 +807,14 @@
     <div class="section-hdr">
       <div class="section-tag">Integration</div>
       <h2 class="section-title">From <span class="grad">npm install</span> to session keys in 5 minutes</h2>
-      <p class="section-sub">Delegacy is an SDK + API service. No smart contract deployments, no infra to manage.</p>
+      <p class="section-sub">SessionGuard is an SDK + API service. No smart contract deployments, no infra to manage.</p>
     </div>
     <div class="steps">
       <div class="step">
         <div class="step-num">1</div>
         <div class="step-title">Install the SDK</div>
         <p class="step-body">
-          <code style="font-family:'JetBrains Mono',monospace;color:var(--cyan);font-size:.85em">pnpm add @delegacy/sdk</code><br /><br />
+          <code style="font-family:'JetBrains Mono',monospace;color:var(--cyan);font-size:.85em">pnpm add @sessionguard/sdk</code><br /><br />
           Works with any TypeScript or JavaScript app. EVM and Solana packages are separate by choice — only import what you use.
         </p>
       </div>
@@ -981,7 +981,7 @@
     <div class="section-hdr">
       <div class="section-tag">Market Verticals</div>
       <h2 class="section-title">Every app that touches <span class="grad">digital assets</span> is a customer</h2>
-      <p class="section-sub">Delegacy is horizontal infrastructure — the session key layer for every Web3 vertical.</p>
+      <p class="section-sub">SessionGuard is horizontal infrastructure — the session key layer for every Web3 vertical.</p>
     </div>
     <div class="uc-grid">
 
@@ -1107,14 +1107,14 @@
               <div class="dot d-r"></div><div class="dot d-a"></div><div class="dot d-g"></div>
               <span class="code-fname">evm-session.ts</span>
             </div>
-            <div class="code-body"><span class="kw">import</span> { <span class="typ">DelegacyClient</span>, <span class="fn">AllowlistPolicy</span>,
+            <div class="code-body"><span class="kw">import</span> { <span class="typ">SessionGuardClient</span>, <span class="fn">AllowlistPolicy</span>,
          <span class="fn">RateLimitPolicy</span>, <span class="fn">SpendingLimitPolicy</span> }
-  <span class="kw">from</span> <span class="str">'@delegacy/sdk'</span>;
+  <span class="kw">from</span> <span class="str">'@sessionguard/sdk'</span>;
 
-<span class="kw">const</span> client = <span class="kw">new</span> <span class="fn">DelegacyClient</span>({
+<span class="kw">const</span> client = <span class="kw">new</span> <span class="fn">SessionGuardClient</span>({
   chainId:    <span class="num">8453</span>,  <span class="cm">// Base mainnet</span>
   rpcUrl:     <span class="str">'https://mainnet.base.org'</span>,
-  bundlerUrl: <span class="str">'https://bundler.delegacy.io/base'</span>,
+  bundlerUrl: <span class="str">'https://bundler.sessionguard.io/base'</span>,
 });
 
 <span class="kw">const</span> account = <span class="kw">await</span> client.<span class="fn">createAccount</span>({ owner: userWallet });
@@ -1145,12 +1145,12 @@ console.<span class="fn">log</span>(<span class="str">'Tx:'</span>, receipt.tran
               <div class="dot d-r"></div><div class="dot d-a"></div><div class="dot d-g"></div>
               <span class="code-fname">solana-session.ts</span>
             </div>
-            <div class="code-body"><span class="kw">import</span> { <span class="typ">SolanaDelegacyClient</span>, <span class="fn">AllowlistPolicy</span>,
+            <div class="code-body"><span class="kw">import</span> { <span class="typ">SolanaSessionGuardClient</span>, <span class="fn">AllowlistPolicy</span>,
          <span class="fn">SpendingLimitPolicy</span>, <span class="fn">ComputeLimitPolicy</span> }
-  <span class="kw">from</span> <span class="str">'@delegacy/solana-sdk'</span>;
+  <span class="kw">from</span> <span class="str">'@sessionguard/solana-sdk'</span>;
 <span class="kw">import</span> { <span class="typ">Keypair</span> } <span class="kw">from</span> <span class="str">'@solana/web3.js'</span>;
 
-<span class="kw">const</span> client = <span class="kw">new</span> <span class="fn">SolanaDelegacyClient</span>({
+<span class="kw">const</span> client = <span class="kw">new</span> <span class="fn">SolanaSessionGuardClient</span>({
   cluster: <span class="str">'mainnet-beta'</span>,
   rpcUrl:  <span class="str">'https://api.mainnet-beta.solana.com'</span>,
 });
@@ -1220,9 +1220,9 @@ console.<span class="fn">log</span>(<span class="str">'Sig:'</span>, result.sign
 <section class="section" id="comparison" style="padding-top:0">
   <div class="container">
     <div class="section-hdr">
-      <div class="section-tag">Why Delegacy</div>
+      <div class="section-tag">Why SessionGuard</div>
       <h2 class="section-title">How we <span class="grad">stack up</span> against the field</h2>
-      <p class="section-sub">Delegacy is the only session key infrastructure that spans both EVM and Solana under a single unified SDK — while staying non-custodial end-to-end.</p>
+      <p class="section-sub">SessionGuard is the only session key infrastructure that spans both EVM and Solana under a single unified SDK — while staying non-custodial end-to-end.</p>
     </div>
 
     <div class="cmp-wrap">
@@ -1230,7 +1230,7 @@ console.<span class="fn">log</span>(<span class="str">'Sig:'</span>, result.sign
         <thead>
           <tr>
             <th class="cmp-feature-col">Feature</th>
-            <th class="cmp-us">Delegacy</th>
+            <th class="cmp-us">SessionGuard</th>
             <th>ZeroDev</th>
             <th>Biconomy</th>
             <th>Safe</th>
@@ -1358,7 +1358,7 @@ console.<span class="fn">log</span>(<span class="str">'Sig:'</span>, result.sign
     <div class="section-hdr">
       <div class="section-tag">Security</div>
       <h2 class="section-title">Trustless by design. <span class="grad">Verified on-chain.</span></h2>
-      <p class="section-sub">Every security guarantee is enforced at the VM layer. Nothing relies on trusting Delegacy's servers.</p>
+      <p class="section-sub">Every security guarantee is enforced at the VM layer. Nothing relies on trusting SessionGuard's servers.</p>
     </div>
     <div class="sec-layout">
       <ul class="sec-list">
@@ -1515,7 +1515,7 @@ console.<span class="fn">log</span>(<span class="str">'Sig:'</span>, result.sign
           <li class="pr-feat">Custom contract audits</li>
         </ul>
         <div class="pr-cta">
-          <a href="mailto:enterprise@delegacy.io" class="btn btn-ghost" style="font-size:.85rem">Contact Sales →</a>
+          <a href="mailto:enterprise@sessionguard.io" class="btn btn-ghost" style="font-size:.85rem">Contact Sales →</a>
         </div>
       </div>
 
@@ -1568,7 +1568,7 @@ console.<span class="fn">log</span>(<span class="str">'Sig:'</span>, result.sign
     <div class="footer-top">
       <div>
         <a href="#" class="nav-logo" style="font-size:1.1rem">
-          <span class="logo-icon">🔑</span> Delegacy
+          <span class="logo-icon">🔑</span> SessionGuard
         </a>
         <p class="footer-desc">
           Session key wallet infrastructure for Web3. Build frictionless apps without compromising user custody.
@@ -1609,14 +1609,14 @@ console.<span class="fn">log</span>(<span class="str">'Sig:'</span>, result.sign
           <li><a href="#">About</a></li>
           <li><a href="#">Blog</a></li>
           <li><a href="#">Security</a></li>
-          <li><a href="mailto:enterprise@delegacy.io">Contact</a></li>
+          <li><a href="mailto:enterprise@sessionguard.io">Contact</a></li>
           <li><a href="#">Privacy Policy</a></li>
         </ul>
       </div>
     </div>
 
     <div class="footer-bottom">
-      <span class="footer-copy">© 2026 Delegacy. All rights reserved.</span>
+      <span class="footer-copy">© 2026 SessionGuard. All rights reserved.</span>
       <div class="footer-pills">
         <span class="fpill">EVM</span>
         <span class="fpill">ERC-4337</span>

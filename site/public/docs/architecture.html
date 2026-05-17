@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Architecture — Delegacy</title>
+  <title>Architecture — SessionGuard</title>
   <style>
     :root {
       --bg: #0d1117;
@@ -119,7 +119,7 @@
 </head>
 <body>
   <nav>
-    <a href="../index.html" class="logo">Delegacy</a>
+    <a href="../index.html" class="logo">SessionGuard</a>
     <span style="font-size:0.7rem;text-transform:uppercase;letter-spacing:0.08em;padding:0.15rem 0.5rem;border-radius:4px;font-weight:700;background:#3fb95022;color:#3fb950">EVM</span>
     <a href="architecture.html" class="active">Architecture</a>
     <a href="integration-guide.html">Integration</a>
@@ -141,10 +141,10 @@
 │                        Developer's Application                         │
 │                  (Game, DeFi App, Commerce Platform)                    │
 └────────────────────┬──────────────────────────────────┬─────────────────┘
-                     │  SDK (@delegacy/sdk)          │  REST API
+                     │  SDK (@sessionguard/sdk)          │  REST API
                      ▼                                   ▼
 ┌────────────────────────────────────┐  ┌──────────────────────────────┐
-│       DelegacyClient           │  │    Delegacy API          │
+│       SessionGuardClient           │  │    SessionGuard API          │
 │  ┌─────────────┐ ┌──────────────┐  │  │  ┌────────────────────────┐  │
 │  │ SessionKey   │ │ BundlerClient│  │  │  │ /api/v1/accounts      │  │
 │  │ Manager      │ │              │  │  │  │ /api/v1/sessions      │  │
@@ -167,9 +167,9 @@
 │                         Blockchain (Ethereum / L2)                      │
 │                                                                         │
 │  ┌──────────────────┐  ┌────────────────────────────────────────────┐   │
-│  │  EntryPoint       │  │  Delegacy Contracts                    │   │
+│  │  EntryPoint       │  │  SessionGuard Contracts                    │   │
 │  │  (ERC-4337        │  │  ┌────────────────┐  ┌─────────────────┐  │   │
-│  │   Singleton)      │  │  │ Delegacy   │  │ SessionKey      │  │   │
+│  │   Singleton)      │  │  │ SessionGuard   │  │ SessionKey      │  │   │
 │  │                   │  │  │ Account        │  │ Validator       │  │   │
 │  │  Validates &      │  │  │ (per user)     │  │ (module)        │  │   │
 │  │  executes         │  │  └────────────────┘  └────────┬────────┘  │   │
@@ -222,10 +222,10 @@
 
     <h2>Contract Relationships</h2>
 <pre>
-DelegacyFactory
-  └── deploys → DelegacyAccount (one per user, EIP-1167 clones)
+SessionGuardFactory
+  └── deploys → SessionGuardAccount (one per user, EIP-1167 clones)
 
-DelegacyAccount
+SessionGuardAccount
   ├── owner (master key — never leaves user's device)
   ├── validators[] (installed modules)
   │    └── SessionKeyValidator

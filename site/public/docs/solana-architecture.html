@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Solana Architecture — Delegacy</title>
+  <title>Solana Architecture — SessionGuard</title>
   <style>
     :root {
       --bg: #0d1117;
@@ -138,7 +138,7 @@
 </head>
 <body>
   <nav>
-    <a href="../index.html" class="logo">Delegacy</a>
+    <a href="../index.html" class="logo">SessionGuard</a>
     <span class="chain-label evm">EVM</span>
     <a href="architecture.html">Architecture</a>
     <a href="integration-guide.html">Integration</a>
@@ -160,10 +160,10 @@
 │                        Developer's Application                         │
 │                  (Game, DeFi App, Commerce Platform)                    │
 └────────────────────┬──────────────────────────────────┬─────────────────┘
-                     │ SDK (@delegacy/solana-sdk)    │  REST API
+                     │ SDK (@sessionguard/solana-sdk)    │  REST API
                      ▼                                   ▼
 ┌────────────────────────────────────┐  ┌──────────────────────────────┐
-│    SolanaDelegacyClient        │  │    Delegacy API          │
+│    SolanaSessionGuardClient        │  │    SessionGuard API          │
 │  ┌─────────────┐ ┌──────────────┐  │  │  ┌────────────────────────┐  │
 │  │ SessionKey   │ │ Transaction  │  │  │  │ /api/v1/solana/        │  │
 │  │ Manager      │ │ Builder      │  │  │  │   accounts             │  │
@@ -187,10 +187,10 @@
 │                         Solana Blockchain                                │
 │                                                                         │
 │  ┌──────────────────────────────────────────────────────────────────┐   │
-│  │  Delegacy Program (Anchor)                                   │   │
+│  │  SessionGuard Program (Anchor)                                   │   │
 │  │                                                                  │   │
 │  │  ┌──────────────────┐  ┌──────────────────────────────────────┐  │   │
-│  │  │ Delegacy     │  │ Session Key Data (PDA)               │  │   │
+│  │  │ SessionGuard     │  │ Session Key Data (PDA)               │  │   │
 │  │  │ Account (PDA)    │  │  ├── valid_after / valid_until       │  │   │
 │  │  │  ├── owner       │  │  ├── revoked flag                    │  │   │
 │  │  │  ├── session_cnt │  │  └── policy_count                    │  │   │
@@ -242,7 +242,7 @@
 2. SDK generates Ed25519 keypair (session key)
 3. SDK builds registerSessionKey instruction (guard PDA + session PDA derivation)
 4. Transaction signed by OWNER KEYPAIR (one time)
-5. Transaction → Solana RPC → Delegacy Program
+5. Transaction → Solana RPC → SessionGuard Program
 6. Program → initializes SessionKeyData PDA
 7. Program → initializes each Policy PDA (one tx per policy config)
 8. Session key is now active on-chain
@@ -254,7 +254,7 @@
  1. App calls SDK → execute(session, targetProgram, instructionData)
  2. SDK builds execute_via_session instruction
  3. Transaction signed by the SESSION KEY (not owner!)
- 4. Transaction → Solana RPC → Delegacy Program
+ 4. Transaction → Solana RPC → SessionGuard Program
  5. Program → loads SessionKeyData PDA → checks time bounds
  6. Program → checks revoked flag
  7. Program → loads AllowlistPolicy PDA → verifies target program
@@ -267,8 +267,8 @@
 
     <h2>PDA Account Relationships</h2>
 <pre>
-Delegacy Program
-  └── derives → DelegacyAccount PDA (per user)
+SessionGuard Program
+  └── derives → SessionGuardAccount PDA (per user)
        Seeds: ["session_guard", owner_pubkey]
        Fields: owner, session_count, bump
 
@@ -300,7 +300,7 @@ Delegacy Program
         <tr><th>Layer</th><th>Protection</th></tr>
       </thead>
       <tbody>
-        <tr><td>Delegacy PDA</td><td>Only owner can register/revoke session keys</td></tr>
+        <tr><td>SessionGuard PDA</td><td>Only owner can register/revoke session keys</td></tr>
         <tr><td>Session Key Data</td><td>Ed25519 signature verification + time bounds</td></tr>
         <tr><td>Policies</td><td>On-chain enforced — no server trust required</td></tr>
         <tr><td>Solana Runtime</td><td>Native replay protection via recent blockhash</td></tr>
@@ -315,7 +315,7 @@ Delegacy Program
 programs/session-guard/src/
 ├── lib.rs              # Program entry — 8 instructions
 ├── state.rs            # Account structs (5 types)
-├── errors.rs           # DelegacyError enum (10 variants)
+├── errors.rs           # SessionGuardError enum (10 variants)
 └── instructions/
     ├── mod.rs           # Module re-exports
     ├── account.rs       # InitializeAccount handler
@@ -338,7 +338,7 @@ programs/session-guard/src/
         <tr><td>Full session creation (4 policies)</td><td>~65,000</td></tr>
       </tbody>
     </table>
-    <p>Maximum per transaction: <strong>1,400,000 CUs</strong> (Solana limit). Delegacy operations stay well within this budget.</p>
+    <p>Maximum per transaction: <strong>1,400,000 CUs</strong> (Solana limit). SessionGuard operations stay well within this budget.</p>
   </div>
 </body>
 </html>
