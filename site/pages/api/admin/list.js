@@ -1,12 +1,11 @@
 import Redis from 'ioredis';
 
-let _redis;
-function getRedis() {
-  if (_redis) return _redis;
+function makeRedis() {
   const { REDIS_URL } = process.env;
-  if (!REDIS_URL) throw new Error('REDIS_URL not set');
-  _redis = new Redis(REDIS_URL, { maxRetriesPerRequest: 2, connectTimeout: 5000 });
-  return _redis;
+  if (!REDIS_URL) throw new Error('REDIS_URL not configured');
+  const client = new Redis(REDIS_URL, { maxRetriesPerRequest: 1, connectTimeout: 5000, lazyConnect: true });
+  client.on('error', () => {});
+  return client;
 }
 
 export default async function handler(req, res) {
@@ -17,9 +16,11 @@ export default async function handler(req, res) {
   }
 
   try {
-    const redis = getRedis();
+    const redis = makeRedis();
+    await redis.connect();
     const emails = (await redis.smembers('waitlist')) ?? [];
     const meta   = (await redis.hgetall('waitlist_meta')) ?? {};
+    redis.disconnect();
 
     const waitlist = emails.map((email) => ({
       email,

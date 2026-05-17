@@ -1,14 +1,5 @@
 import Redis from 'ioredis';
 
-let _redis;
-function getRedis() {
-  if (_redis) return _redis;
-  const { REDIS_URL } = process.env;
-  if (!REDIS_URL) throw new Error('REDIS_URL not set');
-  _redis = new Redis(REDIS_URL, { maxRetriesPerRequest: 2, connectTimeout: 5000 });
-  return _redis;
-}
-
 function isValidEmail(email) {
   return typeof email === 'string' &&
     /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email.trim()) &&
@@ -28,17 +19,29 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'A valid email address is required.' });
   }
 
+  const { REDIS_URL } = process.env;
+  if (!REDIS_URL) return res.status(500).json({ error: 'REDIS_URL not configured.' });
+
   const normalizedEmail = email.trim().toLowerCase();
 
+  const redis = new Redis(REDIS_URL, {
+    maxRetriesPerRequest: 1,
+    connectTimeout: 5000,
+    lazyConnect: true,
+  });
+  redis.on('error', () => {}); // prevent unhandled-error crash in serverless
+
   try {
-    const redis = getRedis();
-    // SADD returns 1 if new member, 0 if duplicate
+    await redis.connect();
     const added = await redis.sadd('waitlist', normalizedEmail);
-    if (added === 0) return res.status(200).json({ ok: true, message: 'Signed up!' });
-    await redis.hset('waitlist_meta', { [normalizedEmail]: Date.now() });
+    if (added > 0) {
+      await redis.hset('waitlist_meta', normalizedEmail, String(Date.now()));
+    }
     return res.status(200).json({ ok: true, message: 'Signed up!' });
   } catch (err) {
     console.error('[waitlist]', err.message);
-    return res.status(500).json({ error: 'Could not save your signup. Please try again.' });
+    return res.status(500).json({ error: err.message });
+  } finally {
+    redis.disconnect();
   }
 }
