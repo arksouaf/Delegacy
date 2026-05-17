@@ -38,11 +38,9 @@
       flex-wrap: wrap;
     }
     nav .logo {
-      font-weight: 700;
-      font-size: 1.2rem;
-      color: var(--accent);
       text-decoration: none;
-    }
+      display: flex; align-items: center;
+    
     nav .sep {
       color: var(--border);
       font-size: 1.2rem;
@@ -138,7 +136,7 @@
 </head>
 <body>
   <nav>
-    <a href="../index.html" class="logo">SessionGuard</a>
+    <a href="../index.html" class="logo"><img src="../logo.png" alt="SessionGuard" style="height:30px;width:auto" /></a>
     <span class="chain-label evm">EVM</span>
     <a href="architecture.html">Architecture</a>
     <a href="integration-guide.html">Integration</a>

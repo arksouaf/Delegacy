@@ -36,11 +36,9 @@
       z-index: 100;
     }
     nav .logo {
-      font-weight: 700;
-      font-size: 1.2rem;
-      color: var(--accent);
       text-decoration: none;
-    }
+      display: flex; align-items: center;
+    
     nav a {
       color: var(--text-muted);
       text-decoration: none;
@@ -119,7 +117,7 @@
 </head>
 <body>
   <nav>
-    <a href="../index.html" class="logo">SessionGuard</a>
+    <a href="../index.html" class="logo"><img src="../logo.png" alt="SessionGuard" style="height:30px;width:auto" /></a>
     <span style="font-size:0.7rem;text-transform:uppercase;letter-spacing:0.08em;padding:0.15rem 0.5rem;border-radius:4px;font-weight:700;background:#3fb95022;color:#3fb950">EVM</span>
     <a href="architecture.html" class="active">Architecture</a>
     <a href="integration-guide.html">Integration</a>
