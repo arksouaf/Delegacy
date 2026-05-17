@@ -265,6 +265,65 @@
     }
 
     /* ═══════════════════════════════════════════════════════
+       TOKEN ADDRESS STRIP
+    ═══════════════════════════════════════════════════════ */
+    .token-strip {
+      background: var(--bg2);
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 0;
+    }
+    .token-strip-inner {
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 1rem;
+    }
+    .token-meta {
+      display: flex; align-items: center; gap: .75rem;
+    }
+    .token-chain-badge {
+      display: inline-flex; align-items: center; gap: .3rem;
+      background: rgba(153,69,255,.12); border: 1px solid rgba(153,69,255,.3);
+      color: #c084fc; font-size: .7rem; font-weight: 700;
+      padding: .2rem .65rem; border-radius: 999px;
+      letter-spacing: .07em; text-transform: uppercase;
+    }
+    .token-name {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1rem; font-weight: 700; color: var(--text);
+    }
+    .token-full-name {
+      font-size: .82rem; color: var(--text-dim);
+    }
+    .token-addr-row {
+      display: flex; align-items: center; gap: .75rem;
+      background: rgba(255,255,255,.03); border: 1px solid var(--border);
+      border-radius: 10px; padding: .5rem 1.1rem;
+    }
+    .token-addr-label {
+      font-size: .72rem; color: var(--text-muted);
+      text-transform: uppercase; letter-spacing: .07em; white-space: nowrap;
+    }
+    .token-addr-divider {
+      width: 1px; height: 1rem; background: var(--border2);
+    }
+    .token-addr-value {
+      font-family: 'Space Mono', 'Courier New', monospace;
+      font-size: .82rem; color: var(--text-muted);
+      letter-spacing: .04em; white-space: nowrap;
+    }
+    .token-soon-badge {
+      display: inline-flex; align-items: center; gap: .3rem;
+      background: linear-gradient(135deg,rgba(14,165,233,.14),rgba(34,211,238,.14));
+      border: 1px solid rgba(14,165,233,.4);
+      color: var(--blue); font-size: .7rem; font-weight: 700;
+      padding: .25rem .7rem; border-radius: 999px;
+      letter-spacing: .07em; text-transform: uppercase; white-space: nowrap;
+    }
+    @media (max-width: 640px) {
+      .token-strip-inner { justify-content: center; text-align: center; }
+      .token-meta { justify-content: center; }
+    }
+
+    /* ═══════════════════════════════════════════════════════
        SECTION LAYOUT
     ═══════════════════════════════════════════════════════ */
     .section { padding: 6.5rem 0; }
@@ -774,6 +833,27 @@
       <div class="stat">
         <span class="stat-val" data-target="5">0</span>
         <span class="stat-lbl">On-Chain Policies</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     TOKEN ADDRESS
+═══════════════════════════════════════════════════════════ -->
+<div class="token-strip">
+  <div class="container">
+    <div class="token-strip-inner">
+      <div class="token-meta">
+        <span class="token-chain-badge">◎ Solana</span>
+        <span class="token-name">SGT</span>
+        <span class="token-full-name">SessionGuard Token</span>
+      </div>
+      <div class="token-addr-row">
+        <span class="token-addr-label">CA</span>
+        <span class="token-addr-divider"></span>
+        <span class="token-addr-value">Announcing at launch &mdash; address TBA</span>
+        <span class="token-soon-badge">⏳ Coming Soon</span>
       </div>
     </div>
   </div>
